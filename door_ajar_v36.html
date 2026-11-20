@@ -581,6 +581,29 @@ button,input,select,textarea{font-family:inherit}
 :root{color-scheme:dark only}
 @media (prefers-color-scheme: dark){:root{--bg:#1a0f08;--panel:#2a1a0e;--line:#8a6a30;--text:#fff0d0;--dim:#cdb48a;--sea:#3aa0ff;--storm:#ffd84a;--bad:#ff4d4d;--ok:#4dffb0;color-scheme:dark only}html,body{background:#1a0f08;color:#fff0d0}}
 @media (prefers-color-scheme: light){:root{color-scheme:dark only}}
+
+/* v43: 장비창 장착 슬롯 선택 표시 — 바깥 외곽선(스크롤 영역에 잘림) 대신 등급색 테두리 바로 안쪽에 얇은 흰 선. 카드 크기·간격은 그대로 */
+.sq.on{outline:none;box-shadow:inset 0 0 0 2px #fff}
+
+/* ===== v44 ===== */
+/* 문 카드: 장착 중 = 은은한 연두 테두리 + '✓ 사용 중' / 미리 보는 카드 = 바탕만 살짝 밝게 */
+.dt.on{border-color:var(--line);background:#4a3218;color:var(--text)}
+.dt.use{border-color:rgba(141,255,176,.6);box-shadow:inset 0 0 0 1px rgba(141,255,176,.18)}
+/* 장비 광택 */
+.shn{position:relative;display:inline-block;line-height:0;flex:none}
+.shn img{display:block}
+.shn::after{content:'';position:absolute;inset:0;pointer-events:none;-webkit-mask:var(--u) center/100% 100% no-repeat;mask:var(--u) center/100% 100% no-repeat;
+ background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.45) 47%,rgba(255,255,255,.7) 50%,rgba(255,255,255,.45) 53%,transparent 60%) no-repeat;background-size:300% 100%;background-position:130% 0;
+ animation:shn 3.4s linear infinite;animation-duration:var(--cy,3.4s);animation-delay:var(--d,0s)}
+@keyframes shn{0%{background-position:130% 0}28%,100%{background-position:-30% 0}}
+.shn.lg::before{content:'';position:absolute;right:-4px;top:-4px;width:9px;height:9px;z-index:2;pointer-events:none;opacity:0;
+ background:linear-gradient(#fff,#fff) center/1px 100% no-repeat,linear-gradient(#fff,#fff) center/100% 1px no-repeat;filter:drop-shadow(0 0 2px #fff);animation:spk 3.4s linear infinite;animation-duration:var(--cy,3.4s);animation-delay:var(--d,0s)}
+@keyframes spk{0%,27%{opacity:0;transform:scale(.3)}31%{opacity:1;transform:scale(1)}38%,100%{opacity:0;transform:scale(.4)}}
+
+/* ===== v45: 장비 등급별 광택 ===== */
+.shn.r0::after,.shn.r1::after{display:none}   /* 일반·고급: 움직이는 광택 없음 */
+.shn.r2::after{opacity:.5;animation-name:shnR}   /* 레어: v44보다 옅게, 더 드물게(지나가는 시간은 비슷하게 약 1초) */
+@keyframes shnR{0%{background-position:130% 0}15%,100%{background-position:-30% 0}}
 </style></head><body><div id="frm"><i></i><i></i><i></i><i></i></div><div id="gfx"></div><div id="ti" hidden><div id="tw"><canvas id="tc" width="180" height="370"></canvas><button id="tiM" type="button" aria-label="배경음악" aria-pressed="true"><svg viewBox="0 0 10 12" shape-rendering="crispEdges" fill="currentColor"><path d="M2 8h4v1h1v2H6v1H3v-1H2V9zM7 1h2v1h1v2H9V3H8v6H7z"/></svg></button><div id="tt"><b>문틈</b><i>AJAR</i></div><div id="tb"><button id="tiB" type="button">게임 시작</button></div></div></div><div id="evo" hidden><canvas id="evcv"></canvas><div id="evc" hidden><div class="mgt">문 진화!</div><div id="evbox"><img id="evImg" alt=""></div><div class="evn" id="evName"></div><div class="mgtap" id="evTap">탭하여 계속</div></div></div><div id="df" hidden><div class="stg"><i class="seam"></i><div class="frame"><img class="leaf" id="dfImg" alt=""></div><div class="t t1">새로운 문 발견!</div><div class="t t2" id="dfName"></div><div class="t t3" id="dfSub"></div><div class="t t4">탭하여 계속</div></div></div><div id="dp" hidden><div class="dpb"><b id="dpT"></b><small id="dpS"></small><div class="dpv" id="dpv"><canvas id="dpc" width="180" height="176"></canvas></div><small id="dpN"></small><div class="dpbt"><button id="dpA" class="bt can">이 외형 적용</button><button id="dpX" class="bt">닫기</button></div><button id="dpR" class="bt" hidden style="min-height:38px">기본 문 외형으로 되돌리기</button></div></div>
 <div id="app">
 <div class="top"><div><span class="tl">보관 </span><i class="cn"></i><b id="bC">0</b><i class="gm"></i><b id="bG">0</b></div><div>상자 <b id="bxN">0</b></div><button id="fin">정산</button><button id="snd" aria-label="효과음" aria-pressed="true">효과음</button><button id="bgmB" aria-label="배경음악" aria-pressed="true">BGM</button><button id="pause" aria-label="일시정지">❚❚</button></div>
@@ -613,7 +636,9 @@ const CFG={
   '거인은 훔쳐 온 보물마다 작은 종을 매달았다.\n어느 밤, 잠긴 금고 안에서 종이 한 번 울렸다.\n그날부터 거인은 한쪽 눈을 뜨고 잔다.',
   '간수는 금고에 매일 철판을 한 장씩 덧댔다.\n열쇠 구멍까지 덮은 날, 안에서 노크 소리가 났다.\n지금도 가끔 철판을 벌리고 귀를 기울인다.',
   '왕은 떠나면서 제 왕관을 거인에게 맡겼다.\n거인은 밤마다 왕관 안쪽의 먼지를 닦는다.\n오늘은 금테에 작은 손자국이 하나 남아 있었다.'],
- swFx:{dur:0.22},   // v42 문 전환 효과 길이(초): 누른 채 다른 속성 버튼으로 밀어 실제로 바뀐 순간 한 번
+ swFx:{dur:0.22},
+ forestGlow:{cycle:4.6,dur:0.8},   // v45 숲의 문 잎 빛: 한 바퀴(초)마다 dur초 동안 은은하게(잎 두 장이 서로 엇갈려 스침)
+ shine:{cycle:3.4,rareCycle:6.5,rareFrom:2},   // v44·v45 장비 광택: 유니크·전설은 cycle초(앞 28%에 빛이 지나감), 레어는 rareCycle초에 한 번 옅게, 일반·고급은 광택 없음   // v44 장비 광택 한 바퀴(초): 앞 28%에 빛이 지나가고 나머지는 쉼(전설 십자 반짝임은 지나간 직후)   // v42 문 전환 효과 길이(초): 누른 채 다른 속성 버튼으로 밀어 실제로 바뀐 순간 한 번
  evo:{pre:250,on:170,off:280,glow:400,ready:450},   // v39 문 진화(ms, 합성 성공과 같은 박자): 어둡게 시작 후 pre 뒤 기존 문이 on 동안 하얗게 → off 동안 잦아듦 → glow 동안 흰 여운 → 결과 카드+효과음 → ready 뒤 탭으로 닫기
  rcvShow:0.8,   // 수확 확정 뒤 하단에 '회수' 금액을 보여 주는 시간(초). 재화 지급과 다음 조작은 즉시예요
  giant:{scale:1.15},   // v24 거인을 그대로 키우는 배율(플레이 화면만, 타이틀은 1.0)
@@ -668,6 +693,12 @@ const CFG={
   {name:'3지역 · 왕의 금고실',short:'왕의 금고실',giant:'균열의 왕관 거인',hpMul:1.9,def:0.04,rew:{coin:3.2,gem:2.1,mine:1.7},boxMul:1.6,minGrade:2,box:{chance:0.45,kinds:['water','fire','frost','storm']},
    vault:{hp:64,def:0.05,coins:300,gems:40,weak:'frost'},focus:{first:[2.5,4.5],gap:[3,5.5],tele:0.8,dur:3.5,mul:2.4},zb:[52,36,12]}],
  zbRisk:[1,1.25,1.5],                        // 보스 장비 상자: 획득 당시 경계도 구간(기본/보상 증가/고위험)별로 유니크×m·전설×m² 가중치
+ itemGrade:[   // v45 일반 파밍: 상자에서 장비가 나왔을 때 장비 등급 추첨표(%) — 행=상자 등급(일반·고급·레어·유니크·전설 상자), 열=장비 등급(일반·고급·레어·유니크·전설)
+   [90,10,0,0,0],
+   [70.0818,29.516,0.4022,0,0],
+   [41.7049,50,8,0.2435,0.0516],
+   [0,73.3,24,2.5,0.2],
+   [0,55,36,8,1]],   // 1지역·기본 구간 전체 목표: 일반 65 · 고급 30 · 레어 4.5 · 유니크 0.45 · 전설 0.05(%) / 유니크·전설 상자는 고급 이상 보장 / 보스 상자는 이 표를 쓰지 않아요(기존 등급 보장)
  loot:{itemChance:[0.30,0.38,0.46,0.55,0.65],coin:[25,60,140,320,800],gem:[2,5,12,28,70]}, // 상자 등급별 장비 확률·코인·보석
  itemMax:15,itemNeed:lv=>2+Math.ceil(lv/2),  // 장비 최대 레벨 / 중복으로 레벨업하는 데 필요한 게이지
  itemPow:[0.5,0.65,0.8,1.0,1.3],             // 등급별 장비 효과 = (해당 스탯 레벨당 효과) × 이 배율 × 장비 레벨
@@ -1412,14 +1443,15 @@ function spFrame(g,x,y,w,h,d,tm,up){const st=d.st|0;if(!d.sp||!st)return;const F
   if(st>=2){for(let i=0;i<4;i++){R(-3-i,-3-i,1,1,i%2?'#a46bff':'#2a0a40');R(w+2+i,-3-i,1,1,i%2?'#a46bff':'#2a0a40');R(-3-i,h+1+i,1,1,'#7a4ad0');R(w+2+i,h+1+i,1,1,'#7a4ad0');}
    if(up){const bob=Math.round(Math.sin(T*3)*1.5);R((w>>1)-2,-9+bob,5,1,'#c89bff');R((w>>1),-11+bob,1,5,'#c89bff');R((w>>1)-1,-8+bob,3,1,gl);}}}
   else if(d.sp==='forest'){   // Lv10: 가느다란 덩굴 + 새순(문 윤곽 밖으로 삐죽) / Lv20: 굵은 덩굴 한 줄기가 문틀 옆을 타고 올라 위쪽 모서리를 감싸요
-   const sw=i=>F(T*1.6+i)%2,ox=up?-4:-2,vw=up?4:2;
+   const sw=i=>0,ox=up?-4:-2,vw=up?4:2;   // v45: 덩굴·잎·새순은 문틀을 따라 감긴 모양으로 고정(꿈틀거림 없음)
+   const glw=i=>{const q=((T+i*2.3)%CFG.forestGlow.cycle)/CFG.forestGlow.dur;return q<1?Math.sin(q*Math.PI):0;},lit=(X,Y,W2,H2,i)=>{const a=glw(i);if(a>0){g.globalAlpha=a*.75;R(X,Y,W2,H2,'#eaffc8');g.globalAlpha=1;}};   // 잎 한두 장에만 가끔 스치는 옅은 빛
    if(st===1){for(let yy=h-1;yy>=h*.38;yy--)R(-2,yy,1,1,'#2a7a2a');
-    [[.82],[.66],[.5]].forEach((q,i)=>{const yy=Math.round(h*q[0]);R(-3,yy,1,2,'#2a7a2a');R(-4,yy-1,2,1,'#7ddf6a');R(-4,yy-2+sw(i),1,1,'#b6ff7a');});
+    [[.82],[.66],[.5]].forEach((q,i)=>{const yy=Math.round(h*q[0]);R(-3,yy,1,2,'#2a7a2a');R(-4,yy-1,2,1,'#7ddf6a');R(-4,yy-2+sw(i),1,1,'#b6ff7a');if(i!==1)lit(-4,yy-1,2,1,i);});
     for(let yy=h-1;yy>=h*.7;yy--)R(w+1,yy,1,1,'#2a7a2a');R(w+2,Math.round(h*.78),2,1,'#7ddf6a');R(w+3,Math.round(h*.78)-1,1,1,'#b6ff7a');}
    else{for(let yy=h+1;yy>=-3;yy--){const x0=ox+Math.round(Math.sin(yy*.45));R(x0,yy,vw,1,'#2f8a2f');R(x0,yy,1,1,'#1d5a1d');R(x0+1,yy,1,1,'#58c050');}
     const tw=Math.round(w*.7);for(let xx=-vw-1;xx<tw;xx++){const yy=-3+Math.round(Math.sin(xx*.6)*.8);R(xx,yy-1,1,vw,'#2f8a2f');R(xx,yy-1,1,1,'#58c050');R(xx,yy+vw-2,1,1,'#1d5a1d');}
     R(tw,-5,2,2,'#2f8a2f');R(tw+1,-7+sw(0),1,2,'#2f8a2f');R(tw+1,-8+sw(0),2,1,'#7ddf6a');
-    [[.7],[.45],[.2]].forEach((q,i)=>{const yy=Math.round(h*q[0]),x0=ox-(i%2?0:1);R(x0-2,yy,2,2,'#7ddf6a');R(x0-3,yy-1+sw(i),1,1,'#b6ff7a');});
+    [[.7],[.45],[.2]].forEach((q,i)=>{const yy=Math.round(h*q[0]),x0=ox-(i%2?0:1);R(x0-2,yy,2,2,'#7ddf6a');R(x0-3,yy-1+sw(i),1,1,'#b6ff7a');if(i!==1)lit(x0-2,yy,2,2,i);});
     [[.3],[.8]].forEach(q=>R(ox+vw+1,Math.round(h*q[0]),2,2,'#7ddf6a'));
     R(Math.round(w*.3),-5,1,1,'#ffd84a');R(Math.round(w*.5),-6,1,1,'#ff8ad0');
     for(let yy=h-1;yy>=h*.6;yy--)R(w+1,yy,1,1,'#2a7a2a');R(w+2,Math.round(h*.72),2,1,'#7ddf6a');}}}
@@ -1429,7 +1461,8 @@ function doorIcon(d,lock){const key=(d.sp?d.sp+(d.st|0):d.m+'_'+d.s)+(lock?'L':'
   if(lock){g.fillStyle='rgba(8,10,20,.88)';g.fillRect(0,0,26,40);g.fillStyle='#8d9bc4';g.font='bold 18px sans-serif';g.fillText('?',8,26);}u=c.toDataURL();}catch(_){}
  return DICON[key]=u;}
 function drawPreview(){const c=$('pv');if(!c||!c.getContext||S.evFreeze)return;const g=c.getContext('2d');g.fillStyle='#2a180b';g.fillRect(0,0,140,44);
- const one=(d,x,lock)=>{g.fillStyle=doorPal(d).f;g.fillRect(x-2,2,26,39);g.fillStyle='#0a0e1c';g.fillRect(x,4,22,36);leaf(g,x,4,22,36,d,S.t);spFrame(g,x,4,22,36,d,S.t,0);if(lock){g.fillStyle='rgba(8,10,20,.88)';g.fillRect(x-2,2,26,39);g.fillStyle='#8d9bc4';g.font='bold 18px sans-serif';g.fillText('?',x+6,29);}};
+ const T=S.pvT||0;   // v44: 창이 열려 있는 동안 흐르는 미리보기 전용 시간(게임은 멈춰 있어도 문 효과는 움직여요)
+ const one=(d,x,lock)=>{g.fillStyle=doorPal(d).f;g.fillRect(x-2,2,26,39);g.fillStyle='#0a0e1c';g.fillRect(x,4,22,36);leaf(g,x,4,22,36,d,T);spFrame(g,x,4,22,36,d,T,0);if(lock){g.fillStyle='rgba(8,10,20,.88)';g.fillRect(x-2,2,26,39);g.fillStyle='#8d9bc4';g.font='bold 18px sans-serif';g.fillText('?',x+6,29);}};   // v44: 위치는 고정, 문 그림 자체의 고유 효과만 재생
  if(S.dsel==='base'){const g0=doorGrade(M.dlv);one(dOf(g0),M.dlv>=CFG.door.maxLv?58:30);if(g0<14){g.fillStyle='#8d9bc4';g.font='bold 16px sans-serif';g.fillText('→',62,28);one(dOf(g0+1),88);}}
  else{const id=S.dsel,own=!!M.sp[id],s0=own?spStage(id):0;if(!own||s0>=2)one({sp:id,st:s0},58,!own);else{one({sp:id,st:s0},30);g.fillStyle='#8d9bc4';g.font='bold 16px sans-serif';g.fillText('→',62,28);one({sp:id,st:s0+1},88);}}}
 /* --- 상자 개봉 --- */
@@ -1452,10 +1485,11 @@ function resolveZB(bx){const r=Math.max(0,Math.min(CFG.zones.length-1,bx.r|0)),z
  if(bx.f){const un=pool.filter(i=>!M.inv.some(x=>x.id===i.id));if(un.length){cand=un;o.zbx.fresh=true;}}   // 최초 격파: 같은 등급에서 미보유 장비 우선(없으면 정상 중복 강화)
  const G=CFG.boss.gem,gem=Math.round(G.r[r]*G.g[gi]);S.bank.g+=gem;o.zbx.gem=gem;   // 보스 상자 = 레어 이상 장비 + 보석. 코인·특수 문은 나오지 않아요
  giveEquip(o,cand[Math.floor(rnd(0,cand.length))],g);return o;}
+function pickW(w){let x=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<w.length;i++){x-=w[i];if(x<0)return i;}return w.length-1;}
 function resolveBox(bx){if(bx&&bx.t==='zb')return resolveZB(bx);const z=bx?bx.z|0:0,bs=!!(bx&&bx.t==='boss'),[g0,g]=bs?rollBoss(z):rollGrade(z,bx&&bx.r),o={g0,g,pro:g>g0,z,boss:bs},L=CFG.loot;
  const locked=CFG.special.list.filter(x=>!M.sp[x.id]);
  if(locked.length&&Math.random()<CFG.special.chance[g]){const sp=locked[Math.floor(rnd(0,locked.length))];M.sp[sp.id]=true;M.spg[sp.id]=g;if(!M.spl[sp.id])M.spl[sp.id]=1;o.door=sp;o.dg=g;return o;}
- if(Math.random()<L.itemChance[g]){const pool=CFG.items.filter(i=>i.grade===g),it=pool[Math.floor(rnd(0,pool.length))];giveEquip(o,it,g);}
+ if(Math.random()<L.itemChance[g]){const ig=bs?g:pickW(CFG.itemGrade[g]),pool=CFG.items.filter(i=>i.grade===ig),it=pool[Math.floor(rnd(0,pool.length))];giveEquip(o,it,ig);}   // v45: 장비가 나오는 확률은 그대로, 일반 파밍은 장비 등급을 상자 등급별 표로 따로 추첨(보스 상자는 상자 등급 그대로)
  else if(Math.random()<.5){const c=Math.round(L.coin[g]*rnd(.8,1.2));S.bank.c+=c;o.coin=c;}
  else{const gm=Math.max(1,Math.round(L.gem[g]*rnd(.8,1.2)));S.bank.g+=gm;o.gem=gm;}
  return o;}
@@ -1469,9 +1503,9 @@ function cardHtml(o,i,di,seen){const d=Math.min((di||0)*.09,2.4),t=o.item;let ic
   if(M.eq[t.it.slot]===t.u&&t.auto)cls=' auto';ck=ckHtml(t);}
  else if(o.coin){ic='<i class="cn big"></i>';lo='+'+o.coin;}else{ic='<i class="gm big"></i>';lo='+'+o.gem;}
  const ad=(o.pro?d+2.05:d+.9).toFixed(2);
- return '<div class="card'+(o.pro?' pro':'')+(o.g===4?' g4':'')+' fx'+o.g+cls+(PPS&&PPS.k==='res'&&PPS.i===i?' sel':'')+(seen?' done':'')+'" data-i="'+i+'" data-b="'+(o.bid||0)+'" style="--c0:'+gcol(o.g0)+';--c1:'+gcol(o.g)+';--d:'+d.toFixed(2)+'s;--ad:'+ad+'s"><div class="cv">?</div>'+fxHtml(o,di,seen)+'<i class="gb'+(GR[o.g].n.length>2?' l3':'')+'" style="background:'+gcol(o.g)+'">'+GR[o.g].n+'</i>'+nb+ic+'<span class="lo">'+lo+'</span>'+ck+'</div>';}
+ return '<div class="card'+(o.pro?' pro':'')+(o.g===4?' g4':'')+' fx'+o.g+cls+(PPS&&PPS.k==='res'&&PPS.i===i?' sel':'')+(seen?' done':'')+'" data-i="'+i+'" data-b="'+(o.bid||0)+'" style="--c0:'+gcol(o.g0)+';--c1:'+gcol(o.g)+';--d:'+d.toFixed(2)+'s;--ad:'+ad+'s"><div class="cv">?</div>'+fxHtml(o,di,seen)+(()=>{const bg=t?t.it.grade:o.g;return'<i class="gb'+(GR[bg].n.length>2?' l3':'')+'" style="background:'+gcol(bg)+'">'+GR[bg].n+'</i>';})()+nb+ic+'<span class="lo">'+lo+'</span>'+ck+'</div>';}
 function riskTag(o){return o.z?'<small class="rk">'+CFG.risk.zones[o.z].name+' '+ZSEAL[o.z]+'</small>':'';}   // 이번 선택의 결과만 짧게(획득 경계도 구간)
-function detHtml(o){const g=GR[o.g],gl='<span style="color:'+gcol(o.g)+'">'+g.n+(o.pro?' ↑승급':'')+'</span>',zl=riskTag(o);
+function detHtml(o){const ig=o.item?o.item.it.grade:o.g,g=GR[ig],gl='<span style="color:'+gcol(ig)+'">'+g.n+(!o.item&&o.pro?' ↑승급':'')+'</span>'+(o.item&&ig!==o.g?' <small class="dim">('+GR[o.g].n+' 상자)</small>':''),zl=riskTag(o);
  if(o.door){const on=M.skin===o.door.id;return'<div><b>'+o.door.name+'</b> '+gl+'</div><div class="ok">특수 문 해금!'+(on?' · ✔ 지금 사용 중':'')+'</div><button class="bt can" data-dpv="'+o.door.id+'" style="min-height:40px;width:100%;margin-top:4px">미리보기 · 외형 적용</button>'+zl;}
  if(o.item){const t=o.item,it=t.it,x=inst(t.u),on=M.eq[it.slot]===t.u;
   if(!x)return'<div><b style="color:'+gcol(it.grade)+'">'+it.name+'</b> '+gl+'</div><div class="dim">합성 재료로 사용했어요</div>'+zl;
@@ -1589,10 +1623,17 @@ function costBtn(a,o,mx,pre){if(mx)return'<button class="bt" disabled>MAX</butto
  const t=(pre?pre+' ':'')+(o.c?'<span class="'+(okC?'':'sh')+'"><i class="cn"></i>'+o.c+'</span> ':'')+(o.g?'<span class="'+(okG?'':'sh')+'"><i class="gm"></i>'+o.g+'</span>':'');
  const l=ok?'':'<span class="lack">'+[o.c>S.bank.c?'코인 '+(o.c-S.bank.c):'',o.g>S.bank.g?'보석 '+(o.g-S.bank.g):''].filter(Boolean).join(' · ')+' 부족</span>';
  return'<button class="bt '+(ok?'can':'dis')+'" data-a="'+a+'">'+t+l+'</button>';}
-function openUp(t){if(S.up)return;popClose();const from=S.phase==='settle'?'settle':(S.phase==='idle'&&!S.paused?'idle':null);if(!from)return;S.upFrom=from;held.clear();S.ignore.clear();S.eqSel=null;S.mg=null;if(from==='idle')S.paused=true;if(from==='settle')$('sett').hidden=true;if(t==='stat'||t==='eq'||t==='door')S.tab=t;S.up=true;msg('');renderUp();$('up').hidden=false;syncSheet();}
+function openUp(t){if(S.up)return;popClose();const from=S.phase==='settle'?'settle':(S.phase==='idle'&&!S.paused?'idle':null);if(!from)return;S.upFrom=from;held.clear();S.ignore.clear();S.eqSel=null;S.mg=null;if(from==='idle')S.paused=true;if(from==='settle')$('sett').hidden=true;if(t==='stat'||t==='eq'||t==='door')S.tab=t;if(S.tab==='door')S.dsel=M.skin&&M.sp[M.skin]?M.skin:'base';S.up=true;msg('');renderUp();$('up').hidden=false;syncSheet();}
 function closeUp(){popClose();S.up=false;$('up').hidden=true;held.clear();S.ignore.clear();const f=S.upFrom;S.upFrom=null;if(f==='idle')S.paused=false;if(f==='settle')drawSettle();syncSheet();}
+/* v43: 장비창에서 문고리·경첩·문패를 바꿔 눌러도 창 윗선과 카드가 움직이지 않게, 세 부위 중 가장 긴 목록에 맞춘 높이를 유지(최대 높이는 넘지 않음). 합성창을 펼치면 해제 */
+function eqHold(){const sh=document.querySelector('#up .sheet'),ub=$('ub');if(!sh)return;sh.style.minHeight='';
+ if(S.tab==='door'){const cur=S.dsel;let mx=0;for(const id of ['base'].concat(CFG.special.list.map(x=>x.id))){S.dsel=id;ub.innerHTML=doorTab();mx=Math.max(mx,sh.offsetHeight);}S.dsel=cur;ub.innerHTML=doorTab();
+  const cap=parseFloat(getComputedStyle(sh).maxHeight)||1e9;sh.style.minHeight=Math.min(mx,cap)+'px';return;}   // v44: 문 강화창도 다른 문을 보거나 장착해도 윗선·카드 위치 고정
+ if(S.tab!=='eq'||S.mg)return;
+ const cur=S.slot;let mx=0;for(const [sl] of SLOTS){S.slot=sl;ub.innerHTML=eqTab();mx=Math.max(mx,sh.offsetHeight);}S.slot=cur;ub.innerHTML=eqTab();
+ const cap=parseFloat(getComputedStyle(sh).maxHeight)||1e9;sh.style.minHeight=Math.min(mx,cap)+'px';}
 function renderUp(){const sc0=$('ub').scrollTop;$('uw').innerHTML='<i class="cn"></i>'+S.bank.c+' <i class="gm"></i>'+S.bank.g;$('uT').textContent=S.tab==='stat'?'스탯':S.tab==='eq'?'장비':'문 강화';
- $('ub').innerHTML=S.tab==='stat'?statTab():S.tab==='eq'?eqTab():doorTab();if(S.tab==='door')document.querySelectorAll('.pvl span').forEach(e=>{e.classList.remove('w');if(e.offsetHeight>16)e.classList.add('w');});$('ub').scrollTop=sc0;if(PPS&&PPS.k==='eq')popRender();}   // 다시 그려도 스크롤 위치는 그대로, 팝업은 같은 칸 옆에 다시 붙어요
+ $('ub').innerHTML=S.tab==='stat'?statTab():S.tab==='eq'?eqTab():doorTab();eqHold();if(S.tab==='door')document.querySelectorAll('.pvl span').forEach(e=>{e.classList.remove('w');if(e.offsetHeight>16)e.classList.add('w');});$('ub').scrollTop=sc0;if(PPS&&PPS.k==='eq')popRender();}   // 다시 그려도 스크롤 위치는 그대로, 팝업은 같은 칸 옆에 다시 붙어요
 const SGR=[['ctl','문 제어',['speed','time']],['atk','공격',['dmg','crit']],['hid','은신',['calm']],['loot','수집',['box']]];   // 구매 레벨·비용은 그대로, 이름과 배치만 효과별로
 function statTab(){let h='';SGR.forEach(([gc,gt,ks])=>{h+='<div class="grp g-'+gc+'"><b>'+gt+'</b></div>';
  ks.map(k=>CFG.stats.find(x=>x.k===k)).forEach(st=>{const lv=M.lv[st.k],mx=lv>=CFG.maxLv,c=costOf(st,lv),ib=bon(st.k)-lv*st.per;
@@ -1603,17 +1644,19 @@ const mgNeed=()=>CFG.merge.need,mgPicked=k=>S.mg?S.mg.sel.filter(u=>{const x=ins
 function mgAvail(g){return g.list.filter(x=>!isEq(x)&&!S.mg.sel.includes(x.u));}   // 착용 중인 1개는 재료로 쓸 수 없고, 같은 칸의 여분만 쓸 수 있어요
 function mgGrade(){return S.mg&&S.mg.sel.length?ITEM[inst(S.mg.sel[0]).id].grade:-1;}
 function matCnt(sl){const c=[0,0,0,0,0];M.inv.forEach(x=>{const it=ITEM[x.id];if(it.slot===sl&&!isEq(x))c[it.grade]++;});return c;}   // 착용 중인 1개는 제외, 등급끼리 합산하지 않아요
+/* v44: 장비 아이콘 광택 — 그림(금속) 모양 안에서만 작은 빛이 천천히 지나가고 잠시 쉬어요. 전설은 지나간 직후 모서리에 작은 흰 십자 반짝임. 화면의 여러 장비는 시작 시점을 조금씩 어긋나게 */
+function icS(sl,gr,i){const u=iconURL(sl,gr),C=CFG.shine,cy=gr===2?C.rareCycle:C.cycle,dl=-((i*0.61)%cy).toFixed(2);return'<span class="shn r'+gr+(gr>=4?' lg':'')+'" style="--u:url('+u+');--d:'+dl+'s;--cy:'+cy+'s"><img src="'+u+'"></span>';}   // v45: 등급별 광택(일반·고급 없음 / 레어 옅고 드물게 / 유니크·전설 v44 그대로)
 function eqTab(){const gs=sortedGroups(S.slot),mg=S.mg&&S.mg.slot===S.slot?S.mg:(S.mg=null);
  let h='<div class="stk"><div class="sqs">';
- SLOTS.forEach(([sl,nm])=>{const x=eqI(sl),it=x&&ITEM[x.id];
-  h+='<div class="sq'+(S.slot===sl?' on':'')+(it?'':' emp')+'" data-a="slot:'+sl+'"'+(it?' style="border-color:'+gcol(it.grade)+'"':'')+'>'+(it?'<img src="'+iconURL(sl,it.grade)+'">':'<span class="x">✕</span>')+'<span class="sd"><span class="sn">'+nm+'</span><span class="sl">'+(it?'Lv '+x.lv+' · '+OPT.short[x.opt]:'비어 있음')+'</span></span></div>';});
+ SLOTS.forEach(([sl,nm],k)=>{const x=eqI(sl),it=x&&ITEM[x.id];
+  h+='<div class="sq'+(S.slot===sl?' on':'')+(it?'':' emp')+'" data-a="slot:'+sl+'"'+(it?' style="border-color:'+gcol(it.grade)+'"':'')+'>'+(it?icS(sl,it.grade,k):'<span class="x">✕</span>')+'<span class="sd"><span class="sn">'+nm+'</span><span class="sl">'+(it?'Lv '+x.lv+' · '+OPT.short[x.opt]:'비어 있음')+'</span></span></div>';});
  h+='</div><div class="srt"><button class="'+(S.sort==='pow'?'on':'')+'" data-a="sort:pow">능력치순</button><button class="'+(S.sort==='grade'?'on':'')+'" data-a="sort:grade">등급순</button><button data-a="best">최적 장착</button><button class="'+(M.auto?'on':'')+'" data-a="auto">자동 장착 '+(M.auto?'ON':'OFF')+'</button></div></div>';
  const can=matCnt(S.slot).slice(0,4).some(c=>c>=mgNeed());
  h+='<div class="mgrow"><span id="mgMsg" class="mgm"></span><button class="mgbt'+(mg?' on':can?' rdy':'')+'" data-a="mg">'+(mg?'합성 닫기':'장비 합성')+'</button></div>';
  if(!gs.length)return h+'<div class="none">아직 획득한 장비가 없어요</div>'+(mg?mgPanel():'');
  const mgr=mgGrade();
- h+='<div class="eqg">'+gs.map(g=>{const it=ITEM[g.id],n=g.list.length,on=g.list.some(isEq),pk=mg?mgPicked(g.key):0,dim=mg&&(it.grade>=4||(mgr>=0&&it.grade!==mgr));
-  return'<div class="eg g'+it.grade+(!mg&&PPS&&PPS.k==='eq'&&PPS.key===g.key?' sel':'')+(pk?' pk':'')+(dim?' dim':'')+'" data-key="'+g.key+'" data-a="'+(mg?'mgp:':'sel:')+g.key+'" style="border-color:'+gcol(it.grade)+'"><img src="'+iconURL(it.slot,it.grade)+'"><i class="gt'+(GR[it.grade].n.length>2?' l3':'')+'" style="background:'+gcol(it.grade)+'">'+GR[it.grade].n+'</i><span class="ot">'+OPT.short[g.opt]+'</span><span class="lv'+(n>1?' hq':'')+'"><i>Lv '+g.lv+'</i>'+(n>1?'<b class="qty">×'+n+'</b>':'')+'</span>'+(on?'<i class="ck">✔</i>':'')+(pk?'<i class="pn">'+pk+'</i>':'')+'</div>';}).join('')+'</div>';
+ h+='<div class="eqg">'+gs.map((g,k)=>{const it=ITEM[g.id],n=g.list.length,on=g.list.some(isEq),pk=mg?mgPicked(g.key):0,dim=mg&&(it.grade>=4||(mgr>=0&&it.grade!==mgr));
+  return'<div class="eg g'+it.grade+(!mg&&PPS&&PPS.k==='eq'&&PPS.key===g.key?' sel':'')+(pk?' pk':'')+(dim?' dim':'')+'" data-key="'+g.key+'" data-a="'+(mg?'mgp:':'sel:')+g.key+'" style="border-color:'+gcol(it.grade)+'">'+icS(it.slot,it.grade,k+3)+'<i class="gt'+(GR[it.grade].n.length>2?' l3':'')+'" style="background:'+gcol(it.grade)+'">'+GR[it.grade].n+'</i><span class="ot">'+OPT.short[g.opt]+'</span><span class="lv'+(n>1?' hq':'')+'"><i>Lv '+g.lv+'</i>'+(n>1?'<b class="qty">×'+n+'</b>':'')+'</span>'+(on?'<i class="ck">✔</i>':'')+(pk?'<i class="pn">'+pk+'</i>':'')+'</div>';}).join('')+'</div>';
  return mg?h+mgPanel():h;}
 function mgPanel(){const mg=S.mg,n=mgNeed(),sn=SLOTS.find(q=>q[0]===S.slot)[1],g0=mgGrade(),R=CFG.merge.rate,c=matCnt(S.slot);
  let h='<div class="det eqd mgp"><div class="dh"><b>합성 · '+sn+'</b><small>같은 부위·같은 등급 '+n+'개</small></div><div class="mgs">';
@@ -1711,17 +1754,17 @@ function doorTab(){const lv=M.dlv,g=doorGrade(lv),mx=lv>=CFG.door.maxLv,sel=S.ds
  let h='<div class="pvw"><canvas id="pv" width="140" height="44"></canvas>'+pvLabels()+'</div><div class="dts">';
  [['base','기본 문']].concat(CFG.special.list.map(x=>[x.id,x.name])).forEach(([id,nm])=>{const lock=id!=='base'&&!M.sp[id],d=id==='base'?dOf(g):{sp:id,st:M.sp[id]?spStage(id):0};
   const used=!lock&&(M.skin===id||(id==='base'&&!M.skin)),   // 문 강화 탭에서는 발견 등급(상자 등급)을 보여 주지 않아요: 이름과 레벨 중심
-   gl2=lock?'🔒':id==='base'?'<small class="gn">기본</small>':'<small class="gn">Lv '+spLv(id)+'</small>';
+   gl2=lock?'🔒':'<small class="gn">Lv.'+(id==='base'?M.dlv:spLv(id))+'</small>';   // v44: 둘째 줄은 실제 현재 레벨
   h+='<div class="dt'+(sel===id?' on':'')+(used?' use':'')+'" data-a="dsel:'+id+'">'+(used?'<i class="us">✓ 사용 중</i>':'')+'<img src="'+doorIcon(d,lock)+'" width="26" height="40">'+nm+'<br>'+gl2+'</div>';});
  h+='</div>';
  if(sel==='base'){const nxt=g<14?(g+1)*2+1:0;
   h+='<div class="sr"><div><b>'+CFG.door.names[g]+'</b> Lv '+lv+'/'+CFG.door.maxLv+'<small class="efx">기본 자원 획득량 +'+Math.round(CFG.door.bonusPer*(lv-1)*100)+'%'+(mx?' · 최고 레벨':' → <i class="nx">+'+Math.round(CFG.door.bonusPer*lv*100)+'%</i>')+'</small>'+evLine(g<14?CFG.door.names[g+1]:null,nxt)+'</div>'+costBtn('dlv',dcostO(lv),mx)+'</div>';
-  if(M.skin)h+='<button class="bt" data-a="dskin:base" style="min-height:36px">기본 문 외형으로 되돌리기</button>';}
+}
  else{const sp=SPEC[sel],own=!!M.sp[sel],on=M.skin===sel,stn=CFG.stats.find(x=>x.k===sp.k);
   if(!own)h+='<div class="sr"><div><b>'+sp.name+'</b><small>능력치 ????</small></div><button class="bt dis" disabled>미해금</button></div>';
   else{const lv=spLv(sel),mx=lv>=CFG.special.maxLv,nx=CFG.special.evoLv.find(e=>e>lv);
    h+='<div class="sr"><div><b>'+sp.name+'</b> · Lv '+lv+'/'+CFG.special.maxLv+'<small class="efx">'+stn.name+' '+spFmt(stn,spV(sel),mx?null:spVAt(sel,lv+1))+'</small>'+evLine(nx?CFG.special.stage[sel][spStage(sel)+1]:null,nx)+'</div>'+costBtn('slv:'+sel,spCostO(lv),mx)+'</div>';
-   h+='<button class="bt '+(on?'on':'can')+'" data-a="dskin:'+sel+'" style="min-height:36px">'+(on?'✓ 사용 중':'장착')+'</button>';}}
+}}
  return h;}
 const evLine=(nm,lv)=>'<small class="nxe">'+(nm?'다음 외형 · '+nm+' (<b class="evl">Lv '+lv+'</b>)':'최종 외형')+'</small>';   // 설명·이름은 하늘색, 레벨만 산호색
 function spFmt(st,v,v2){const f=x=>(Math.round(x*10000)/100)+(st.k==='crit'?'%p':'%'),p=st.k==='calm'?'−':'+';return p+f(v)+(v2==null?' · 최고 레벨':' → <i class="nx">'+p+f(v2)+'</i>');}   // 예) 속성 피해 +12% → +12.48%
@@ -1768,7 +1811,7 @@ function evoClose(){if(!EV.on)return;EV.on=false;cancelAnimationFrame(EV.raf);EV
 {const ev=$('evo');ev.addEventListener('pointerdown',e=>{e.preventDefault();EV.arm=(EV.on&&EV.rdy)?e.pointerId:null;});ev.addEventListener('pointercancel',()=>{EV.arm=null;});
  ev.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(EV.on&&EV.rdy&&EV.arm!==null)evoClose();});}   // 연출이 끝난 뒤 '새로' 시작한 탭만 닫혀요. 닫는 건 click에서 해서 뒤의 [강화]가 다시 눌리지 않아요
 function setSkin(id){if(id==='base')M.skin=null;else if(M.sp[id])M.skin=id;else return;save();renderUp();}
-function act(a){if(S.mgBusy||(S.evGuard&&performance.now()<S.evGuard)||EV.on)return;const k=a[0];if(k==='s')buyStat(a[1]);else if(k==='slot'){popClose();S.slot=a[1];S.eqSel=null;if(S.mg)S.mg={slot:a[1],sel:[],res:null};renderUp();}else if(k==='sel')popToggle('eq',a[1]);else if(k==='mg'){popClose();S.mg=S.mg?null:{slot:S.slot,sel:[],res:null};msg('');renderUp();}else if(k==='mgp')mgPick(a[1]);else if(k==='mgx'){if(S.mg){S.mg.sel=S.mg.sel.filter(u=>u!==+a[1]);S.mg.res=null;renderUp();}}else if(k==='mgo')mergeDo();else if(k==='sort'){popClose();S.sort=a[1];renderUp();}else if(k==='best')bestEquip();else if(k==='auto'){toggleAuto();renderUp();}else if(k==='eq')toggleEquip(a[1]);else if(k==='en')enhanceItem(a[1]);else if(k==='dsel'){S.dsel=a[1];renderUp();}else if(k==='dlv')doorLevelUp();else if(k==='slv')spLevelUp(a[1]);else if(k==='dskin')setSkin(a[1]);}
+function act(a){if(S.mgBusy||(S.evGuard&&performance.now()<S.evGuard)||EV.on)return;const k=a[0];if(k==='s')buyStat(a[1]);else if(k==='slot'){popClose();S.slot=a[1];S.eqSel=null;if(S.mg)S.mg={slot:a[1],sel:[],res:null};renderUp();}else if(k==='sel')popToggle('eq',a[1]);else if(k==='mg'){popClose();S.mg=S.mg?null:{slot:S.slot,sel:[],res:null};msg('');renderUp();}else if(k==='mgp')mgPick(a[1]);else if(k==='mgx'){if(S.mg){S.mg.sel=S.mg.sel.filter(u=>u!==+a[1]);S.mg.res=null;renderUp();}}else if(k==='mgo')mergeDo();else if(k==='sort'){popClose();S.sort=a[1];renderUp();}else if(k==='best')bestEquip();else if(k==='auto'){toggleAuto();renderUp();}else if(k==='eq')toggleEquip(a[1]);else if(k==='en')enhanceItem(a[1]);else if(k==='dsel'){const id=a[1],own=id==='base'||!!M.sp[id],used=(M.skin||'base')===id;if(S.dsel===id){if(own&&!used)setSkin(id);}else{S.dsel=id;renderUp();}}/* v44: 처음 누르면 미리보기, 같은 카드를 다시 누르면 장착(잠긴 문은 장착 안 됨) */else if(k==='dlv')doorLevelUp();else if(k==='slv')spLevelUp(a[1]);else if(k==='dskin')setSkin(a[1]);}
 function update(dt){
  S.t+=dt;S.pt+=dt;const A=CFG.alert,Mo=CFG.mom,F=CFG.fx;
  S.zt=Math.max(0,(S.zt||0)-dt);S.flash=Math.max(0,S.flash-dt*3);S.shake=Math.max(0,S.shake-dt*8);S.zap=Math.max(0,S.zap-dt);S.lock=Math.max(0,S.lock-dt);
@@ -2155,7 +2198,7 @@ function hud(){
  {const ok=S.phase==='idle'&&!S.paused&&!S.rnd.st;$('elBtn').classList.toggle('off',!ok);const kk=M.el.join();if(kk!==S.elK){S.elK=kk;$('elDots').innerHTML=M.el.map(e=>'<i class="ed" style="background:'+CFG.elem[e].wc+'"></i>').join('');}}
  $('fin').classList.toggle('off',!idle);document.querySelectorAll('#upG .upb').forEach(b=>{b.classList.toggle('off',!idle);b.classList.toggle('can',idle&&can);});}
 let last=performance.now();
-function loop(n){const dt=Math.min(.05,(n-last)/1000);last=n;if(!S.paused)update(dt);gazeTick(dt);icTick(dt);hfTick(dt);hudTick();bgmTick();draw();hum();if(S.up&&S.tab==='door')drawPreview();requestAnimationFrame(loop);}
+function loop(n){const dt=Math.min(.05,(n-last)/1000);last=n;if(!S.paused)update(dt);gazeTick(dt);icTick(dt);hfTick(dt);hudTick();bgmTick();draw();hum();if(S.up&&S.tab==='door'){S.pvT=(S.pvT||0)+dt;drawPreview();}requestAnimationFrame(loop);}
 /* ===== 입력: 누르고 있는 손가락/키 → 문 종류(0 바다, 1 뇌우). 누른 채 슬라이드하면 종류만 바뀌고 단계는 유지 ===== */
 const ctl=$('ctl'),typeAt=x=>{const b=ctl.getBoundingClientRect();return x<b.left+b.width/2?0:1;};
 function releaseAll(){held.clear();S.ignore.clear();if(S.phase==='hold')endRound();}
