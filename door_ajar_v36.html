@@ -503,7 +503,48 @@ button,input,select,textarea{font-family:inherit}
 #bgmB{font-size:15px;letter-spacing:0}            /* 영문은 같은 크기에서 작아 보여 한글 '효과음'과 글자 높이를 맞춤 */
 #ub .srt button{white-space:nowrap;padding:0 2px;letter-spacing:-.3px}   /* '자동 장착 ON'이 두 줄로 꺾이지 않게 */
 #up .uh{padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid rgba(216,176,96,.3)}   /* 제목 줄과 첫 내용 사이 여백 + 옅은 황동선 */
-</style></head><body><div id="frm"><i></i><i></i><i></i><i></i></div><div id="gfx"></div><div id="ti" hidden><div id="tw"><canvas id="tc" width="180" height="370"></canvas><button id="tiM" type="button" aria-label="배경음악" aria-pressed="true"><svg viewBox="0 0 10 12" shape-rendering="crispEdges" fill="currentColor"><path d="M2 8h4v1h1v2H6v1H3v-1H2V9zM7 1h2v1h1v2H9V3H8v6H7z"/></svg></button><div id="tt"><b>문틈</b><i>AJAR</i></div><div id="tb"><button id="tiB" type="button">게임 시작</button></div></div></div><div id="evo" hidden><div id="evp"></div><div id="evc" hidden><div class="mgt">문 진화!</div><div id="evbox"><img id="evImg" alt=""><i id="evfl"></i></div><div class="evn" id="evName"></div><div class="mgtap" id="evTap">탭하여 계속</div></div></div><div id="df" hidden><div class="stg"><i class="seam"></i><div class="frame"><img class="leaf" id="dfImg" alt=""></div><div class="t t1">새로운 문 발견!</div><div class="t t2" id="dfName"></div><div class="t t3" id="dfSub"></div><div class="t t4">탭하여 계속</div></div></div><div id="dp" hidden><div class="dpb"><b id="dpT"></b><small id="dpS"></small><div class="dpv" id="dpv"><canvas id="dpc" width="180" height="176"></canvas></div><small id="dpN"></small><div class="dpbt"><button id="dpA" class="bt can">이 외형 적용</button><button id="dpX" class="bt">닫기</button></div><button id="dpR" class="bt" hidden style="min-height:38px">기본 문 외형으로 되돌리기</button></div></div>
+
+/* ===== v39: 모든 창을 황동 프레임(#frm) 기준으로 =====
+   --fi = 프레임 선의 바깥 위치(화면 끝에서 4px). 아래 창은 프레임 선과 바깥선을 공유하고(선 아래에 깔림),
+   가운데 팝업과 어두운 막은 프레임 선 바로 안쪽(--fi + 1px)부터 덮어서 황동선은 늘 한 줄로 밝게 보여요 */
+:root{--fi:4px;--fin:5px}
+#frm{inset:var(--fi)}
+#sett,#up,#el,#zs{left:var(--fi);right:var(--fi);bottom:var(--fi);width:auto;max-width:none;transform:none}
+#sett .sheet,#up .sheet,#el .sheet,#zs .sheet{border:0;border-top:2px solid #a4843a;border-radius:0;padding-bottom:6px}
+#el .sheet{max-height:calc(66dvh - var(--fi))}#zs .sheet{max-height:calc(70dvh - var(--fi))}
+#shade,#ov,#ov.story,#wm,#dp,#df,#mgx,#evo{inset:var(--fin)}
+#mgr{top:50%}
+#df .stg{margin:0}                               /* 다른 화면의 .stg 여백이 섞여 1~2px 내려가던 것 */                                     /* 합성 결과 카드도 프레임 안쪽 정중앙 */
+/* 정산창 버튼: [모두 열기] [자동 장착] [다음 라운드] — 다음 라운드가 가장 크고 밝게 */
+.sbtn #sNext{flex:1.5;font-size:15px;letter-spacing:0;background:#7a4a14;border-color:#ffd84a;color:#fff3c8;box-shadow:0 4px 0 #3a2208,0 0 16px rgba(255,210,100,.35)}
+.sbtn #sAll,.sbtn #sAuto{flex:1}
+
+/* v39: 문 진화 카드 = 합성 성공 카드(#mgr)와 같은 크기·배경·테두리·안쪽 흰빛·글자 간격 */
+#evo{background:none!important;transition:none}#evo:not([hidden]){display:block}
+#evcv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+#evc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(264px,84vw);box-sizing:border-box;background:#221409;border:3px solid #ff8a78;border-radius:12px;padding:12px 12px 10px;gap:4px;
+ box-shadow:0 0 24px #ff8a7888,inset 0 0 18px 4px rgba(255,255,255,.55)}
+#evc.in{animation:mgin .22s ease-out both}
+#evc .mgt{font-size:20px;font-weight:900;line-height:1.25;color:#ffe27a;text-shadow:0 0 10px #ffcf5a}
+#evbox{width:86px;height:106px;border:3px solid #ff8a78;border-radius:10px;background:#3d2814;box-shadow:0 0 14px #ff8a78;margin:4px 0;overflow:visible}
+#evImg{width:52px;height:80px;image-rendering:pixelated}   /* 원래 도트 비율(13×20)을 4배로 */
+#evc .evn{font-size:15px;font-weight:700;color:#ff8a78;opacity:1}
+#evc .mgtap{margin-top:6px;font-size:12px;color:#fff3c8;opacity:0}#evc .mgtap.on{opacity:.9;animation:mgb 1.1s infinite alternate}
+
+/* v39: 금고 도전 이야기 */
+#ov.boss h2{font-size:26px;line-height:1.25}#ov.boss .bzr{display:block;font-size:12px;color:#cdb48a;letter-spacing:.02em;text-shadow:none;margin-bottom:4px}
+#ov.boss #ovM{max-width:310px;word-break:keep-all;text-wrap:pretty;overflow-wrap:break-word;text-align:center;font-size:14px;line-height:1.8;margin:4px 0 18px}
+#ov.boss #ovX{margin-top:-2px}
+
+/* ===== v40: 결과 카드(합성·문 진화) 작게 — 글씨 크기는 그대로, 패딩·아이콘 여백·바깥 광채만 줄였어요 ===== */
+#mgr,#evc{width:min(220px,80vw);padding:9px 9px 8px;gap:3px;border-radius:10px}
+#mgr .mgic{width:74px;height:74px;margin:2px 0;border-width:2px;border-radius:8px}
+#mgr .mgtap,#evc .mgtap{margin-top:3px}
+#mgr .mgo{line-height:1.3}
+/* 문 진화 카드: 얇은 황동 테두리만. 문 그림 둘레 테두리·발광 없음. 새 문 이름·레벨만 산호색 */
+#evc{border:2px solid #c9a24a;box-shadow:0 4px 12px rgba(0,0,0,.45)}
+#evbox{width:auto;height:auto;border:0;background:none;box-shadow:none;margin:4px 0 2px}
+</style></head><body><div id="frm"><i></i><i></i><i></i><i></i></div><div id="gfx"></div><div id="ti" hidden><div id="tw"><canvas id="tc" width="180" height="370"></canvas><button id="tiM" type="button" aria-label="배경음악" aria-pressed="true"><svg viewBox="0 0 10 12" shape-rendering="crispEdges" fill="currentColor"><path d="M2 8h4v1h1v2H6v1H3v-1H2V9zM7 1h2v1h1v2H9V3H8v6H7z"/></svg></button><div id="tt"><b>문틈</b><i>AJAR</i></div><div id="tb"><button id="tiB" type="button">게임 시작</button></div></div></div><div id="evo" hidden><canvas id="evcv"></canvas><div id="evc" hidden><div class="mgt">문 진화!</div><div id="evbox"><img id="evImg" alt=""></div><div class="evn" id="evName"></div><div class="mgtap" id="evTap">탭하여 계속</div></div></div><div id="df" hidden><div class="stg"><i class="seam"></i><div class="frame"><img class="leaf" id="dfImg" alt=""></div><div class="t t1">새로운 문 발견!</div><div class="t t2" id="dfName"></div><div class="t t3" id="dfSub"></div><div class="t t4">탭하여 계속</div></div></div><div id="dp" hidden><div class="dpb"><b id="dpT"></b><small id="dpS"></small><div class="dpv" id="dpv"><canvas id="dpc" width="180" height="176"></canvas></div><small id="dpN"></small><div class="dpbt"><button id="dpA" class="bt can">이 외형 적용</button><button id="dpX" class="bt">닫기</button></div><button id="dpR" class="bt" hidden style="min-height:38px">기본 문 외형으로 되돌리기</button></div></div>
 <div id="app">
 <div class="top"><div><span class="tl">보관 </span><i class="cn"></i><b id="bC">0</b><i class="gm"></i><b id="bG">0</b></div><div>상자 <b id="bxN">0</b></div><button id="fin">정산</button><button id="snd" aria-label="효과음" aria-pressed="true">효과음</button><button id="bgmB" aria-label="배경음악" aria-pressed="true">BGM</button><button id="pause" aria-label="일시정지">❚❚</button></div>
 <div class="alert" id="alert"><div class="ln"><span class="lb">경계도<small class="meta">R<b id="rn">1</b>·최고<b id="best">0</b></small></span><div class="track"><i id="aFill"></i><b class="mk" style="left:40%"></b><b class="mk" style="left:70%"></b></div><b id="aNum" class="num">0</b><b id="zn" class="zn">기본</b></div>
@@ -518,10 +559,10 @@ button,input,select,textarea{font-family:inherit}
 </div>
 <div id="shade" hidden></div><div id="wm" hidden></div>
 <div id="sett" hidden><div class="sheet"><div class="uh"><b id="sT"></b></div><p id="sM"></p><div id="sDet" class="det" hidden></div><div class="sbody"><div id="sGrid"></div></div>
-<button id="sZ" hidden></button><div class="sbtn"><button id="sAll">모두 열기</button><button id="sAuto" class="sec">자동 장착</button><button id="sUp" class="sec">강화</button><button id="sNext" class="sec">다음 라운드</button></div></div></div>
+<button id="sZ" hidden></button><div class="sbtn"><button id="sAll">모두 열기</button><button id="sAuto" class="sec">자동 장착</button><button id="sNext" class="sec">다음 라운드</button></div></div></div>
 <div id="up" hidden><div class="sheet"><div class="uh"><b id="uT">스탯</b><span id="uw"></span></div>
 <div id="uMsg"></div><div class="sbody" id="ub"></div></div></div>
-<div id="upc" hidden><div class="upcb"><b>강화</b><button data-t="stat">스탯</button><button data-t="eq">장비</button><button data-t="door">문 강화</button></div></div>
+
 <div id="el" hidden><div class="sheet" id="elb"></div></div>
 <div id="zs" hidden><div class="sheet" id="zsb"></div></div>
 <script>
@@ -531,7 +572,11 @@ const CFG={
  mom:{grace:0.1,decay:[2.2,4.5,9],boost:1.0}, // 모멘텀. 단계별 초당 감소량([1,2,3단계]) / boost: 남은 개방 시간이 많을수록 재개방이 빨라지는 배율
  round:{time:15,warnAt:3},                   // 한 라운드 문 압력(총 개방 시간, 초)
  alert:{base:[8,14,24],drain:48,startMax:15,cooldown:0.4,bustDrop:0.4,surgeEvery:[2.2,3.8],surgeTele:0.5,surgeDur:0.9,surgeMul:2.5},
- evo:{pre:280,dim:300,card:640,reveal:1250,text:1700,ready:2300},   // 문 진화 연출 시점(ms): 첫 '둥' / 둘째 '둥!'(교체·진동) / 이름 표시 / '탭하여 계속' 허용
+ bossStory:[   // v39 금고 도전 화면의 지역별 보스 이야기(1·2·3지역 순서). 줄바꿈(\n)은 문장 단위
+  '거인은 훔쳐 온 보물마다 작은 종을 매달았다.\n어느 밤, 잠긴 금고 안에서 종이 한 번 울렸다.\n그날부터 거인은 한쪽 눈을 뜨고 잔다.',
+  '간수는 금고에 매일 철판을 한 장씩 덧댔다.\n열쇠 구멍까지 덮은 날, 안에서 노크 소리가 났다.\n지금도 가끔 철판을 벌리고 귀를 기울인다.',
+  '왕은 떠나면서 제 왕관을 거인에게 맡겼다.\n거인은 밤마다 왕관 안쪽의 먼지를 닦는다.\n오늘은 금테에 작은 손자국이 하나 남아 있었다.'],
+ evo:{pre:250,on:170,off:280,glow:400,ready:450},   // v39 문 진화(ms, 합성 성공과 같은 박자): 어둡게 시작 후 pre 뒤 기존 문이 on 동안 하얗게 → off 동안 잦아듦 → glow 동안 흰 여운 → 결과 카드+효과음 → ready 뒤 탭으로 닫기
  rcvShow:0.8,   // 수확 확정 뒤 하단에 '회수' 금액을 보여 주는 시간(초). 재화 지급과 다음 조작은 즉시예요
  giant:{scale:1.15},   // v24 거인을 그대로 키우는 배율(플레이 화면만, 타이틀은 1.0)
  gaze:{stareH:6,pupilT:0.10,headDelay:0.10,headT:0.22,lidT:0.22,wideT:0.07,backT:0.40,pupilBack:0.15,faceX:92,eyeY:60,noteY:100,fontPx:26,noteMs:1000}, // 거인 시선: stareH=노려볼 때 눈 높이(픽셀) / pupilT=눈동자가 문 쪽으로 가는 시간(초) / headDelay=눈동자 뒤 고개·눈꺼풀 시작 지연 / headT·lidT=고개 숙임·눈꺼풀 시간 / wideT=확 뜨는 시간 / backT=시선 거두는 시간 / faceX·eyeY=경고 글자 오른쪽 끝·세로 중심(캔버스 좌표) / noteY=단계 알림 아래 끝 / fontPx=경고 글자 크기 / noteMs=단계 알림 유지(ms)
@@ -1214,9 +1259,11 @@ function bossSettle(){const B=S.boss;
  else if(S.rnd.st){if(S.rnd.p<=pmax()*(1-CFG.boss.minUse)){M.bc=(M.bc|0)+1;if(M.bc>=CFG.boss.every[M.zone])M.bready=true;}}}
 function onNext(){if(M.bready)askBoss();else nextRound();}
 function bossLine(r){const Z=CFG.zones[r],F=Z.focus,V=Z.vault;return Z.giant+': 집중 감시 예고 '+F.tele+'초·지속 '+F.dur+'초, 금고 내구 '+V.hp+(V.weak?', 약점 '+CFG.elem[V.weak].name+' ×'+CFG.elw.vaultWeak:', 약점 없음')+'.'+(r===1?' 철갑이 닫히면 피해가 줄고, 열린 직후 첫 타격이 강해요.':'');}
+/* v39: 금고 도전 화면 = 현재 지역 보스의 짧은 이야기 + [도전] [일반 파밍 계속]. 제목은 게임 안 보스 이름(CFG.zones[].giant), 본문은 CFG.bossStory */
 function askBoss(fromBtn){S.paused=true;$('sett').hidden=true;syncSheet();const Z=ZN();
- overlay(Z.giant+'의 봉인 금고',bossLine(M.zone)+'\n금고를 깨고 문을 닫으면 보스 상자: 레어 이상 장비 1개 + 보석\n(등급만 보장해요. 지금 장비보다 강하다는 보장은 아니에요) 첫 격파는 미보유 장비 우선.\n집중 감시 때 열면 경계도가 빨리 올라요. 실패해도 잃는 것은 없어요.','도전',fromBtn?()=>{resume();startBoss();toast('봉인 금고 등장!',2);}:()=>nextRound('boss'));
- const x=$('ovX');x.hidden=false;x.textContent=fromBtn?'취소':'일반 파밍 계속';x.className='ovx2';x.onclick=fromBtn?()=>resume():()=>nextRound();}
+ overlay(Z.giant,CFG.bossStory[M.zone]||'','도전',fromBtn?()=>{resume();startBoss();toast('봉인 금고 등장!',2);}:()=>nextRound('boss'));
+ $('ov').className='story boss';$('ovT').innerHTML='<small class="bzr">'+Z.name+'</small>'+Z.giant;
+ const x=$('ovX');x.hidden=false;x.textContent='일반 파밍 계속';x.className='ovx2';x.onclick=fromBtn?()=>resume():()=>nextRound();}
 /* v28: 지역별 보스 금고 — 1지역 두꺼운 나무판+낡은 철띠+황동 자물쇠(호박빛이 가늘게) / 2지역 낮고 넓은 강철 금고+굵은 가로 빗장(청백색 빛이 양쪽에서 중앙으로, 맞으면 덜컥) / 3지역 위가 왕관처럼 솟은 검은 금고+금빛 왕관 봉인(보랏빛이 차오르고 깨지기 직전에 틈으로 크게 새어 나옴) */
 const VCR=[[8,6,1,8],[9,13,5,1],[14,13,1,7],[30,8,1,9],[26,16,5,1],[26,16,1,8],[20,22,1,8],[21,29,6,1],[36,22,1,6],[12,24,1,5]];
 function drawArmor(o,x,y,w,h,mx,pl){const B=S.boss,a=B&&B.ar;if(!a)return;const cl=a.s===1,e=a.e,p=Math.max(0,cl?Math.min(1,e/.18):1-Math.min(1,e/.22)),pw=Math.round(((w>>1)+1)*p);   // p: 0 열림 ~ 1 닫힘
@@ -1560,8 +1607,9 @@ function mergeDo(){if(S.mgBusy||MGX.on)return false;const mg=S.mg;if(!mg||mg.sel
 const MGX={on:false,rdy:false,armed:false,t0:0,raf:0,res:null,rects:[],parts:[],f1:false,f2:false,f3:false,rev:false};
 const MGE=document.createElement('div');MGE.id='mgx';MGE.hidden=true;MGE.innerHTML='<canvas id="mgc"></canvas><div id="mgr" hidden></div>';document.body.appendChild(MGE);
 function mgThump(){tone(82,.32,'sine',.16,50);noise(.12,.05,160);vib(12);}
-function mgPlay(rects,res){MGX.on=true;MGX.rdy=false;MGX.armed=false;MGX.res=res;MGX.rects=rects;MGX.f1=MGX.f2=MGX.f3=MGX.f4=MGX.rev=false;MGX.t0=performance.now();
- const cv=$('mgc'),k=2;cv.width=Math.ceil(innerWidth/k);cv.height=Math.ceil(innerHeight/k);MGX.k=k;MGX.cx=cv.width>>1;MGX.cy=Math.round(cv.height*.42);
+function frIn(){const f=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fin'))||0;return{x:f,y:f,w:innerWidth-2*f,h:innerHeight-2*f};}   // v39: 가운데 팝업·어두운 막이 차지하는 프레임 안쪽 영역
+function mgPlay(rects,res){const o=frIn();rects=rects.map(r=>({x:r.x-o.x,y:r.y-o.y,w:r.w,h:r.h}));MGX.on=true;MGX.rdy=false;MGX.armed=false;MGX.res=res;MGX.rects=rects;MGX.f1=MGX.f2=MGX.f3=MGX.f4=MGX.rev=false;MGX.t0=performance.now();
+ const cv=$('mgc'),k=2;cv.width=Math.ceil(o.w/k);cv.height=Math.ceil(o.h/k);MGX.k=k;MGX.cx=cv.width>>1;MGX.cy=cv.height>>1;
  MGX.parts=[];rects.forEach((r,i)=>{for(let q=0;q<22;q++)MGX.parts.push({sx:(r.x+Math.random()*r.w)/k,sy:(r.y+Math.random()*r.h)/k,ex:MGX.cx+(Math.random()*8-4),ey:MGX.cy+(Math.random()*8-4),d:60+Math.random()*180,du:240+Math.random()*90,s:Math.random()<.3?2:1});});
  $('mgr').hidden=true;$('mgr').innerHTML='';MGE.hidden=false;MGE.className='';tone(160,.45,'sine',.05,380);
  cancelAnimationFrame(MGX.raf);MGX.raf=requestAnimationFrame(mgLoop);}
@@ -1595,14 +1643,14 @@ function mgLoop(){if(!MGX.on)return;const t=performance.now()-MGX.t0,cv=$('mgc')
  g.globalAlpha=1;MGX.raf=requestAnimationFrame(mgLoop);}
 function mgResultHtml(res){const x=inst(res.u);if(!x)return'';const it=ITEM[x.id],c=gcol(it.grade),sn=SLOTS.find(q=>q[0]===it.slot)[1];
  const head=res.ok?'<div class="mgt up">승급 성공!<br><span style="color:'+gcol(res.from)+'">'+GR[res.from].n+'</span> → <span style="color:'+c+'">'+GR[it.grade].n+'</span></div>':'<div class="mgt dn">승급 실패 · '+GR[res.from].n+' 유지</div>';
- return head+'<div class="mgic" style="border-color:'+c+';box-shadow:0 0 14px '+c+'"><img src="'+iconURL(it.slot,it.grade)+'"></div><div class="mgn"><b style="color:'+c+'">'+it.name+'</b> <i class="gb2" style="background:'+c+'">'+GR[it.grade].n+'</i></div><div class="mgl">'+sn+' · Lv '+x.lv+'/'+CFG.itemMax+'</div><div class="mgo"><b>'+optName(x.opt)+'</b> '+optFmt(x.opt,iVal(x))+'</div>'+(res.swap?'<div class="ok">✓ 자동 장착됨</div>':res.rec?'<div class="warn">↑ 추천 장비</div>':'')+'<div class="mgtap">탭하여 계속</div>';}
-function mgShow(res){const x=inst(res.u);if(!x)return false;const c=gcol(ITEM[x.id].grade),e=$('mgr');e.innerHTML=mgResultHtml(res);e.style.borderColor=c;e.style.boxShadow='0 0 24px '+c+'88,'+(res.ok?'inset 0 0 18px 4px rgba(255,255,255,.55)':'inset 0 0 12px 2px rgba(110,10,16,.45)');e.hidden=false;return true;}
+ return head+'<div class="mgic" style="border-color:'+c+';box-shadow:0 0 5px '+c+'88"><img src="'+iconURL(it.slot,it.grade)+'"></div><div class="mgn"><b style="color:'+c+'">'+it.name+'</b> <i class="gb2" style="background:'+c+'">'+GR[it.grade].n+'</i></div><div class="mgl">'+sn+' · Lv '+x.lv+'/'+CFG.itemMax+'</div><div class="mgo"><b>'+optName(x.opt)+'</b> '+optFmt(x.opt,iVal(x))+'</div>'+(res.swap?'<div class="ok">✓ 자동 장착됨</div>':res.rec?'<div class="warn">↑ 추천 장비</div>':'')+'<div class="mgtap">탭하여 계속</div>';}
+function mgShow(res){const x=inst(res.u);if(!x)return false;const c=gcol(ITEM[x.id].grade),e=$('mgr');e.innerHTML=mgResultHtml(res);e.style.borderColor=c;e.style.boxShadow='0 0 8px '+c+'55,'+(res.ok?'inset 0 0 12px 2px rgba(255,255,255,.32)':'inset 0 0 7px 1px rgba(110,10,16,.32)');e.hidden=false;return true;}
 function mgReveal(){const res=MGX.res;S.mg&&(S.mg.sel=[]);if(S.up&&S.tab==='eq')renderUp();}   // 이제서야 인벤토리를 갱신 — 결과 팝업 뒤에서 새 장비가 나타나요(소리 없음)
 function mgSfx(res){
  if(res.ok){[523,659,784,1047].forEach((f,i)=>later(i*90,()=>tone(f,.34,'triangle',.07)));later(380,()=>tone(2093,.45,'sine',.05));vib([20,30,60]);}else{tone(247,.28,'triangle',.07,196);later(150,()=>tone(185,.34,'triangle',.06,150));vib(20);}}
 function mgClose(){if(!MGX.on)return;MGX.on=false;cancelAnimationFrame(MGX.raf);MGE.hidden=true;$('mgr').hidden=true;MGX.armed=false;MGX.rdy=false;M.mgp=null;save();S.mgBusy=false;popClose();if(S.up&&S.tab==='eq')renderUp();}
 function mgResume(){if(!M.mgp)return;if(!inst(M.mgp.u)){M.mgp=null;save();return;}   // 연출 도중 새로고침: 결과는 이미 확정돼 있으니 팝업만 다시 보여 줘요(중복 지급 없음)
- MGX.on=true;MGX.res=M.mgp;MGX.rdy=false;MGX.armed=false;S.mgBusy=true;const cv=$('mgc');cv.width=Math.ceil(innerWidth/2);cv.height=Math.ceil(innerHeight/2);const g=cv.getContext('2d');g.globalAlpha=.72;g.fillStyle='#02030a';g.fillRect(0,0,cv.width,cv.height);MGE.hidden=false;mgShow(M.mgp);later(600,()=>{MGX.rdy=true;});}
+ MGX.on=true;MGX.res=M.mgp;MGX.rdy=false;MGX.armed=false;S.mgBusy=true;const cv=$('mgc'),o=frIn();cv.width=Math.ceil(o.w/2);cv.height=Math.ceil(o.h/2);const g=cv.getContext('2d');g.globalAlpha=.72;g.fillStyle='#02030a';g.fillRect(0,0,cv.width,cv.height);MGE.hidden=false;mgShow(M.mgp);later(600,()=>{MGX.rdy=true;});}
 MGE.addEventListener('pointerdown',e=>{if(MGX.on&&MGX.rdy)MGX.armed=true;e.preventDefault();});
 MGE.addEventListener('pointercancel',()=>{MGX.armed=false;});
 MGE.addEventListener('click',e=>{e.stopPropagation();if(MGX.on&&MGX.rdy&&MGX.armed)mgClose();});   // 결과가 뜬 뒤에 '새로' 시작한 탭만 닫혀요(버튼을 누른 손·연출 중 탭은 무시)
@@ -1646,21 +1694,33 @@ function toggleAuto(){M.auto=!M.auto;save();}
 function doorLevelUp(){const lv=M.dlv;if(lv>=CFG.door.maxLv)return false;const c=dcostO(lv);if(!afford(c)){lack(c);return false;}pay(c);M.dlv++;const ev=doorGrade(M.dlv)!==doorGrade(lv);if(!ev){sfxStage(1);vib(20);}save();if(ev)evoPlay(doorGrade(lv),doorGrade(M.dlv));else renderUp();return true;}   // 일반 레벨업은 빠르게 / 외형 단계가 오를 때만 '두둥' 진화 연출
 /* --- 문 진화 연출(외형 단계가 오를 때만): 강화 직전 닫힌 문 확대 → 첫 '둥' 떨림 → 둘째 '둥!' 같은 자리에서 새 외형 + 짧은 진동 → 이전 이름 → 새 이름 → 탭하면 문 강화 탭으로. 특수 문을 쓰고 있어도 '강화되는 기본 문'의 전후를 보여요 --- */
 const EV={on:false,rdy:false,arm:null,tok:0};
-function evoPlay(g0,g1,sp){const e=$('evo'),img=$('evImg'),card=$('evc'),fl=$('evfl'),pop=$('evp'),tok=++EV.tok,ok=()=>EV.tok===tok&&EV.on,V=CFG.evo;
+function evoPlay(g0,g1,sp){const e=$('evo'),img=$('evImg'),card=$('evc'),cv=$('evcv'),tok=++EV.tok,ok=()=>EV.tok===tok&&EV.on,V=CFG.evo;
  EV.on=true;EV.rdy=false;EV.arm=null;S.evFreeze=true;
  const nm=sp?CFG.special.stage[sp][g1]:CFG.door.names[g1],lvN=sp?M.spl[sp]:M.dlv;
- img.src=sp?doorIcon({sp,st:g1}):doorIcon(dOf(g1));$('evName').innerHTML=nm+' · <i>Lv.'+lvN+'</i>';
- $('evName').classList.remove('on');$('evTap').classList.remove('on');fl.classList.remove('rv');card.hidden=true;card.classList.remove('in');e.classList.remove('dim');e.hidden=false;pop.className='';
- // 강화창에서 보던 '왼쪽의 기존 문'(미리보기 캔버스의 왼쪽 문) 위치
- const pv=$('pv'),rc=pv?pv.getBoundingClientRect():{left:innerWidth/2-70,top:innerHeight*.25,width:140,height:44},k=rc.width/140,dl=rc.left+28*k,dt=rc.top+2*k,dw=26*k,dh=39*k;
- pop.style.left=dl+'px';pop.style.top=dt+'px';pop.style.width=dw+'px';pop.style.height=dh+'px';
- later(V.pre,()=>{if(!ok())return;void pop.offsetWidth;pop.className='go';tone(520,.25,'triangle',.08,1040);noise(.1,.05,1800);vib(20);});   // 기존 문을 잠깐 보여 준 뒤 그 자리에서 하얗게 반짝
- later(V.dim,()=>{if(ok())e.classList.add('dim');});
- later(V.card,()=>{if(!ok())return;card.classList.remove('in');card.hidden=false;void card.offsetWidth;card.classList.add('in');tone(110,.3,'sine',.12,70);});   // 첫 프레임부터 화면 정중앙(flex 중앙정렬) · 중심 고정, 크기만 90→100%
- later(V.reveal,()=>{if(!ok())return;fl.classList.add('rv');tone(82,.55,'sine',.2,42);tone(165,.3,'triangle',.1,330);later(90,()=>tone(660,.18,'triangle',.06,990));noise(.2,.08,700);vib(45);});   // 빛이 걷히며 새 외형
- later(V.text,()=>{if(ok())$('evName').classList.add('on');});
- later(V.ready,()=>{if(!ok())return;EV.rdy=true;$('evTap').classList.add('on');});}
-function evoClose(){if(!EV.on)return;EV.on=false;EV.rdy=false;EV.arm=null;S.evFreeze=false;S.evGuard=performance.now()+450;$('evo').hidden=true;renderUp();}
+ img.src=sp?doorIcon({sp,st:g1}):doorIcon(dOf(g1));$('evName').textContent=nm+' · Lv.'+lvN;
+ card.hidden=true;card.classList.remove('in');$('evTap').classList.remove('on');e.hidden=false;
+ // 강화창에서 보던 '왼쪽의 기존 문'(미리보기 캔버스의 왼쪽 문) 위치 → 오버레이(프레임 안쪽) 기준 좌표
+ const o=frIn(),pv=$('pv'),rc=pv?pv.getBoundingClientRect():{left:innerWidth/2-70,top:innerHeight*.25,width:140,height:44},kk=rc.width/140,k=2;
+ cv.width=Math.ceil(o.w/k);cv.height=Math.ceil(o.h/k);
+ const D={x:Math.round((rc.left+28*kk-o.x)/k),y:Math.round((rc.top+2*kk-o.y)/k),w:Math.round(26*kk/k),h:Math.round(39*kk/k)};D.cx=D.x+D.w/2;D.cy=D.y+D.h/2;
+ const g=cv.getContext('2d'),t0=performance.now();let snd=0;
+ const loop=()=>{if(!ok())return;const t=performance.now()-t0,T=t-V.pre;g.clearRect(0,0,cv.width,cv.height);
+  g.globalAlpha=Math.min(.72,t/300*.72);g.fillStyle='#02030a';g.fillRect(0,0,cv.width,cv.height);   // 뒤를 어둡게(합성과 같은 0.3초·같은 농도)
+  if(T>=0){
+   // ① 기존 문이 제자리에서 하얗게 반짝(0~0.17초) → ② 흰빛이 꺼짐(0.17~0.45초) — 합성 재료 칸과 같은 곡선
+   const a=T<V.on?T/V.on:T<V.on+V.off?1-(T-V.on)/V.off:0;
+   if(a>0){const pu=.8+.2*Math.sin(T/28);g.fillStyle='#ffffff';g.globalAlpha=Math.min(1,a)*pu;g.fillRect(D.x,D.y,D.w,D.h);g.globalAlpha=.3*a;g.fillRect(D.x-3,D.y-3,D.w+6,D.h+6);g.globalAlpha=.14*a;g.fillRect(D.x-7,D.y-7,D.w+14,D.h+14);}
+   // ③ 흰빛이 잦아든 뒤 문 자리에 아주 옅은 흰 여운만 잠깐(화면 전체를 물들이지 않아요)
+   const fs=V.on+V.off,ft=T-fs,cx=Math.round(D.cx),cy=Math.round(D.cy);
+   if(ft>=0&&ft<V.glow){const gl=1-ft/V.glow;g.fillStyle='#ffffff';[[2.2,.05],[1.6,.08],[1.1,.12]].forEach(q=>{g.globalAlpha=gl*q[1];pxCircle(g,cx,cy,D.h*.5*q[0]);});}
+    const gs=fs;
+   if(T>=0&&!snd){snd=1;tone(160,.45,'sine',.05,380);}   // 합성 시작과 같은 '스윽'
+   // ④ 결과 카드: 프레임 정중앙에 고정, 효과음과 함께(합성 성공과 같은 등장·같은 소리)
+   if(snd===1&&T>=gs+V.glow){snd=2;card.hidden=false;void card.offsetWidth;card.classList.add('in');$('evTap').classList.add('on');mgSfx({ok:true});
+    later(V.ready,()=>{if(ok())EV.rdy=true;});}}
+  g.globalAlpha=1;EV.raf=requestAnimationFrame(loop);};
+ cancelAnimationFrame(EV.raf);EV.raf=requestAnimationFrame(loop);}
+function evoClose(){if(!EV.on)return;EV.on=false;cancelAnimationFrame(EV.raf);EV.rdy=false;EV.arm=null;S.evFreeze=false;S.evGuard=performance.now()+450;$('evo').hidden=true;renderUp();}
 {const ev=$('evo');ev.addEventListener('pointerdown',e=>{e.preventDefault();EV.arm=(EV.on&&EV.rdy)?e.pointerId:null;});ev.addEventListener('pointercancel',()=>{EV.arm=null;});
  ev.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(EV.on&&EV.rdy&&EV.arm!==null)evoClose();});}   // 연출이 끝난 뒤 '새로' 시작한 탭만 닫혀요. 닫는 건 click에서 해서 뒤의 [강화]가 다시 눌리지 않아요
 function setSkin(id){if(id==='base')M.skin=null;else if(M.sp[id])M.skin=id;else return;save();renderUp();}
@@ -2071,7 +2131,7 @@ function openMap(){if(S.wmo||S.paused||S.up||S.elo||S.zso||S.phase!=='idle')retu
 function closeMap(){if(!S.wmo)return;S.wmo=false;$('wm').hidden=true;held.clear();S.ignore.clear();S.paused=false;}
 $('mapB').addEventListener('click',openMap);$('rgn').addEventListener('click',openMap);
 $('wm').addEventListener('click',e=>{if(!S.wmo)return;const t=e.target.closest&&e.target.closest('.wc.pick');if(e.target.closest&&e.target.closest('#wmc')){closeMap();return;}if(t){const r=+t.dataset.z;closeMap();if(r!==M.zone)setZone(r);return;}if(!(e.target.closest&&e.target.closest('.wmc')))closeMap();});
-document.querySelectorAll('#upG .upb').forEach(b=>b.addEventListener('click',()=>openUp(b.dataset.t)));$('sUp').addEventListener('click',()=>{if(S.phase==='settle'&&!S.up)$('upc').hidden=false;});$('upc').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-t]');$('upc').hidden=true;if(b)openUp(b.dataset.t);});   // 정산의 [강화]: 스탯·장비·문 강화 중에서 고르는 작은 팝업
+document.querySelectorAll('#upG .upb').forEach(b=>b.addEventListener('click',()=>openUp(b.dataset.t)));   // v39: 정산창의 [강화]는 없앴어요. 다음 라운드 뒤 첫 문을 열기 전에 플레이 화면의 [스탯] [장비] [문 강화]로 강화해요
 $('elBtn').addEventListener('click',openEl);$('zs').addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#zsc')){closeZs();return;}const t=e.target.closest&&e.target.closest('[data-z]');if(!t)return;const r=+t.dataset.z;closeZs();if(r!==M.zone)setZone(r);});$('sZ').addEventListener('click',()=>{if(M.zu>M.zone){setZone(M.zone+1);nextRound();}});$('el').addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#elc')){closeEl();return;}const t=e.target.closest&&e.target.closest('[data-e]');if(!t)return;const a=t.dataset.e.split(':');if(a[0]==='slot'){S.elSlot=+a[1];renderEl();}else if(a[0]==='pick')pickEl(a[1]);});$('shade').addEventListener('click',e=>{if(!S.up||S.mgBusy||EV.on||(S.evGuard&&performance.now()<S.evGuard)||e.timeStamp===S.ppT)return;closeUp();});   // 창 바깥(어두운 배경)을 누르면 닫혀요. 팝업이 열려 있었다면 그 팝업만 먼저 닫혀요
 $('sAll').addEventListener('click',openAll);$('sNext').addEventListener('click',()=>onNext());$('bossBtn').addEventListener('click',()=>{if(S.phase==='idle'&&!S.paused&&!S.rnd.st&&M.bready&&!S.boss)askBoss(true);});$('sGrid').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-i]');if(!b||!S.slots)return;const i=+b.dataset.i,sl=S.slots[i];if(!sl)return;if(sl.k==='box'){popClose();openSlot(i);return;}if(sl.hold)return;S.sel=i;if(sl.o&&sl.o.door){popClose();dpOpen(sl.o.door.id);return;}if(sl.o&&sl.o.item){popToggle('res',i);return;}popClose();});$('sDet').addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-eqa]');if(a){manualEquip(a.dataset.eqa);return;}});{const df=$('df');df.addEventListener('pointerdown',e=>{e.preventDefault();DF.arm=(DF.on&&DF.rdy)?e.pointerId:null;});df.addEventListener('pointerup',e=>{if(DF.on&&DF.rdy&&DF.arm===e.pointerId){DF.arm=null;e.preventDefault();dfClose();}});df.addEventListener('pointercancel',()=>{DF.arm=null;});df.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});}   // 연출 전에 눌러 둔 손가락·연출 중 탭은 닫기로 이어지지 않아요(연출 뒤 이 화면 위에서 시작한 탭만)$('dpA').addEventListener('click',dpApply);$('dpR').addEventListener('click',dpBase);$('dpX').addEventListener('click',dpClose);$('dp').addEventListener('click',e=>{if(e.target===$('dp'))dpClose();});
 $('sAuto').addEventListener('click',()=>{toggleAuto();drawSettle();});
