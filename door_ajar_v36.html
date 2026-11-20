@@ -484,17 +484,28 @@ button,input,select,textarea{font-family:inherit}
 #up .sheet{position:relative}#uMsg,#uMsg:empty{position:absolute;right:78px;top:12px;max-width:calc(100% - 250px);min-height:0;margin:0;font-size:11px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;pointer-events:none}#uMsg:empty{display:none}
 /* [3] 문 강화 미리보기: 그림 아래 이름·레벨 */
 .pvw{position:relative;width:100%;max-width:225px;align-self:center}.pvw #pv{display:block;width:100%;max-width:none}
-.pvw{max-width:none}.pvw #pv{width:100%;max-width:225px;margin:0 auto}.pvl{position:relative;height:28px;margin-top:2px}.pvl span{position:absolute;top:0;transform:translateX(-50%);width:max-content;max-width:93px;text-align:center;font-size:10px;line-height:1.2;font-weight:700}.pvl .lv{white-space:nowrap;font-weight:700;font-size:inherit}.pvl i.dt{font-style:normal}.pvl span.w .dt{display:none}.pvl span.w .lv{display:block}   /* 한 줄에 안 들어가는 긴 이름은 이름 아래 줄에 레벨 */
-.pvl .a{color:#fff0d0}.pvl .b{color:#ff8a78}
+.pvw{max-width:none}.pvw #pv{width:100%;max-width:225px;margin:0 auto}.pvl{position:relative;height:28px;margin-top:2px}.pvl span{position:absolute;top:0;transform:translateX(-50%);width:max-content;max-width:93px;text-align:center;font-size:10px;line-height:1.2;font-weight:700}.pvl .lv{white-space:nowrap;font-weight:700;font-size:inherit}.pvl span.w .lv{display:block}   /* 한 줄에 안 들어가는 긴 이름은 이름 아래 줄에 레벨 */
+.pvl .a,.pvl .a .lv{color:#fff0d0}.pvl .b,.pvl .b .lv{color:#ff8a78}
 @media (max-height:680px){.pvw #pv{max-width:150px}.pvl span{font-size:9px}}
 /* [10] 황동 프레임 */
 #frm{position:fixed;inset:4px;z-index:25;pointer-events:none;border:1px solid #a4843a;box-sizing:border-box}
 #frm i{position:absolute;width:5px;height:5px;border:0 solid #c9a24a}
 #frm i:nth-child(1){left:-1px;top:-1px;border-width:2px 0 0 2px}#frm i:nth-child(2){right:-1px;top:-1px;border-width:2px 2px 0 0}
 #frm i:nth-child(3){left:-1px;bottom:-1px;border-width:0 0 2px 2px}#frm i:nth-child(4){right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+
+/* 재화 숫자가 길어 윗줄이 넘칠 때만: 1단계 '보관' 글자 숨김 → 2단계 숫자·간격 한 단계 작게 */
+.top.t1 .tl{display:none}.top.t2{gap:3px}.top.t2 b{font-size:13px;margin:0 2px 0 1px}
+/* ===== v38: 맨 윗줄·BGM 글자·창 제목 여백 ===== */
+.top{min-height:0;gap:5px}
+#fin,#snd,#bgmB,#pause{height:28px;position:relative;z-index:1}
+#snd,#bgmB{width:42px}             /* 버튼 높이 32→28px, 줄 높이도 함께 낮아져요 */
+#fin::before,#snd::before,#bgmB::before,#pause::before{content:'';position:absolute;inset:-6px -2px}  /* 눌리는 범위는 위아래로 6px씩 넓게 유지 */
+#bgmB{font-size:15px;letter-spacing:0}            /* 영문은 같은 크기에서 작아 보여 한글 '효과음'과 글자 높이를 맞춤 */
+#ub .srt button{white-space:nowrap;padding:0 2px;letter-spacing:-.3px}   /* '자동 장착 ON'이 두 줄로 꺾이지 않게 */
+#up .uh{padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid rgba(216,176,96,.3)}   /* 제목 줄과 첫 내용 사이 여백 + 옅은 황동선 */
 </style></head><body><div id="frm"><i></i><i></i><i></i><i></i></div><div id="gfx"></div><div id="ti" hidden><div id="tw"><canvas id="tc" width="180" height="370"></canvas><button id="tiM" type="button" aria-label="배경음악" aria-pressed="true"><svg viewBox="0 0 10 12" shape-rendering="crispEdges" fill="currentColor"><path d="M2 8h4v1h1v2H6v1H3v-1H2V9zM7 1h2v1h1v2H9V3H8v6H7z"/></svg></button><div id="tt"><b>문틈</b><i>AJAR</i></div><div id="tb"><button id="tiB" type="button">게임 시작</button></div></div></div><div id="evo" hidden><div id="evp"></div><div id="evc" hidden><div class="mgt">문 진화!</div><div id="evbox"><img id="evImg" alt=""><i id="evfl"></i></div><div class="evn" id="evName"></div><div class="mgtap" id="evTap">탭하여 계속</div></div></div><div id="df" hidden><div class="stg"><i class="seam"></i><div class="frame"><img class="leaf" id="dfImg" alt=""></div><div class="t t1">새로운 문 발견!</div><div class="t t2" id="dfName"></div><div class="t t3" id="dfSub"></div><div class="t t4">탭하여 계속</div></div></div><div id="dp" hidden><div class="dpb"><b id="dpT"></b><small id="dpS"></small><div class="dpv" id="dpv"><canvas id="dpc" width="180" height="176"></canvas></div><small id="dpN"></small><div class="dpbt"><button id="dpA" class="bt can">이 외형 적용</button><button id="dpX" class="bt">닫기</button></div><button id="dpR" class="bt" hidden style="min-height:38px">기본 문 외형으로 되돌리기</button></div></div>
 <div id="app">
-<div class="top"><div>보관 <i class="cn"></i><b id="bC">0</b><i class="gm"></i><b id="bG">0</b></div><div>상자 <b id="bxN">0</b></div><button id="fin">정산</button><button id="snd" aria-label="효과음" aria-pressed="true">효과음</button><button id="bgmB" aria-label="배경음악" aria-pressed="true">BGM</button><button id="pause" aria-label="일시정지">❚❚</button></div>
+<div class="top"><div><span class="tl">보관 </span><i class="cn"></i><b id="bC">0</b><i class="gm"></i><b id="bG">0</b></div><div>상자 <b id="bxN">0</b></div><button id="fin">정산</button><button id="snd" aria-label="효과음" aria-pressed="true">효과음</button><button id="bgmB" aria-label="배경음악" aria-pressed="true">BGM</button><button id="pause" aria-label="일시정지">❚❚</button></div>
 <div class="alert" id="alert"><div class="ln"><span class="lb">경계도<small class="meta">R<b id="rn">1</b>·최고<b id="best">0</b></small></span><div class="track"><i id="aFill"></i><b class="mk" style="left:40%"></b><b class="mk" style="left:70%"></b></div><b id="aNum" class="num">0</b><b id="zn" class="zn">기본</b></div>
 <div class="ln"><span class="lb">문 압력</span><div class="track"><i id="pFill" style="background:#5fa8d8;width:100%"></i></div><b id="pNum" class="num">15.0s</b></div></div>
 <div id="stage"><canvas id="c" width="180" height="176"></canvas><div id="hud"><div id="gw"></div><div id="sn"></div></div><div id="toast"></div><div id="bhud" hidden><b id="bhT">봉인 금고</b><div class="bbar"><i id="bhF"></i></div><em id="bhP"></em><u id="bhS"></u></div><div id="res"></div><div id="rgn"></div><button id="mapB" type="button" aria-label="창고 지도"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#e8cf94" d="M1 2h10v8H1z"/><path fill="#8a5a2a" d="M1 2h1v8H1zM11 2h1v8h-1zM4 2h1v8H4zM8 2h1v8H8z" opacity=".55"/><path fill="#d8402a" d="M7 4h1v1H7zM6 5h1v1H6zM8 5h1v1H8zM7 6h1v1H7z"/><path fill="#4a3014" d="M2 8h1v1H2zM3 7h1v1H3zM5 7h1v1H5z"/></svg></button><div id="zi"></div>
@@ -1595,7 +1606,12 @@ function mgResume(){if(!M.mgp)return;if(!inst(M.mgp.u)){M.mgp=null;save();return
 MGE.addEventListener('pointerdown',e=>{if(MGX.on&&MGX.rdy)MGX.armed=true;e.preventDefault();});
 MGE.addEventListener('pointercancel',()=>{MGX.armed=false;});
 MGE.addEventListener('click',e=>{e.stopPropagation();if(MGX.on&&MGX.rdy&&MGX.armed)mgClose();});   // 결과가 뜬 뒤에 '새로' 시작한 탭만 닫혀요(버튼을 누른 손·연출 중 탭은 무시)
-function pvLabels(){const sel=S.dsel,L=(x,c,t)=>'<span class="'+c+'" style="left:calc(50% + '+((x-50)/100)+'*min(225px,100%))">'+t.replace(' · ','<i class="dt"> · </i><b class="lv">')+'</b></span>';let h='';
+
+/* v38: 윗줄 폭 맞추기 — 숫자가 바뀔 때와 화면 크기가 바뀔 때만 재요 */
+let _topK='';function topFit(force){const t=document.querySelector('.top');if(!t)return;const k=$('bC').textContent+'|'+$('bG').textContent+'|'+$('bxN').textContent+'|'+innerWidth;if(k===_topK&&!force)return;_topK=k;
+ t.classList.remove('t1','t2');if(t.scrollWidth>t.clientWidth+1){t.classList.add('t1');if(t.scrollWidth>t.clientWidth+1)t.classList.add('t2');}}
+addEventListener('resize',()=>topFit(true));
+function pvLabels(){const sel=S.dsel,L=(x,c,t)=>'<span class="'+c+'" style="left:calc(50% + '+((x-50)/100)+'*min(225px,100%))">'+t.replace(' · ',' <b class="lv">')+'</b></span>';let h='';
  if(sel==='base'){const lv=M.dlv,g=doorGrade(lv);if(g<14&&lv<CFG.door.maxLv)h=L(29.3,'a',CFG.door.names[g]+' · Lv.'+lv)+L(70.7,'b',CFG.door.names[g+1]+' · Lv.'+((g+1)*2+1));else h=L(49.3,'a',CFG.door.names[g]+' · Lv.'+lv);}
  else if(M.sp[sel]){const lv=spLv(sel),s0=spStage(sel),nx=CFG.special.evoLv.find(e=>e>lv),N=CFG.special.stage[sel];if(s0<2&&nx)h=L(29.3,'a',N[s0]+' · Lv.'+lv)+L(70.7,'b',N[s0+1]+' · Lv.'+nx);else h=L(49.3,'a',N[s0]+' · Lv.'+lv);}
  return'<div class="pvl">'+h+'</div>';}
@@ -1996,7 +2012,7 @@ function draw(){
  if(S.flash>0){ctx.globalAlpha=Math.min(.5,S.flash*.5);r(0,0,W,H,S.phase==='bust'?'#ff3030':'#fff6b0');ctx.globalAlpha=1;}
  drawDanger();hud();}
 function hud(){
- const a=S.alert/100;$('bC').textContent=S.bank.c;$('bG').textContent=S.bank.g;$('best').textContent=S.best;$('bxN').textContent=M.boxes;
+ const a=S.alert/100;$('bC').textContent=S.bank.c;$('bG').textContent=S.bank.g;$('best').textContent=S.best;$('bxN').textContent=M.boxes;topFit();
  $('aNum').textContent=Math.floor(S.alert);$('aFill').style.width=S.alert+'%';$('aFill').style.background='hsl('+Math.round(120-120*a)+',85%,50%)';
  $('alert').classList.toggle('warn',S.alert>80&&S.phase==='hold');
  {const bz=S.phase==='bust',z=bz?0:zoneOf(S.alert),zc=$('zn');zc.textContent=bz?'들킴':CFG.risk.zones[z].name;zc.className='zn '+(bz?'zb':'z'+z);}
