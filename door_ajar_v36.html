@@ -604,6 +604,13 @@ button,input,select,textarea{font-family:inherit}
 .shn.r0::after,.shn.r1::after{display:none}   /* 일반·고급: 움직이는 광택 없음 */
 .shn.r2::after{opacity:.5;animation-name:shnR}   /* 레어: v44보다 옅게, 더 드물게(지나가는 시간은 비슷하게 약 1초) */
 @keyframes shnR{0%{background-position:130% 0}15%,100%{background-position:-30% 0}}
+
+/* v46: 문 진화 결과 팝업의 문 이름·레벨은 흰색(기본 문·모든 특수 문 공통) */
+#evc .evn{color:#ffffff}
+/* v46: '○○ 회수!'는 플레이어 문 바로 위(왼쪽 아래)에 — 거인 쪽 빨간 경고와 겹치지 않게 */
+#res.rcv{left:var(--dl,8px);right:auto;top:auto;bottom:var(--db,40%);text-align:left;font-size:28px;transform-origin:left bottom}
+#res.rcv small{font-size:14px}
+#res.rcv.show{animation:rr 1.6s ease-out}@keyframes rr{0%{opacity:0;transform:scale(.6)}12%{opacity:1;transform:scale(1.08)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
 </style></head><body><div id="frm"><i></i><i></i><i></i><i></i></div><div id="gfx"></div><div id="ti" hidden><div id="tw"><canvas id="tc" width="180" height="370"></canvas><button id="tiM" type="button" aria-label="배경음악" aria-pressed="true"><svg viewBox="0 0 10 12" shape-rendering="crispEdges" fill="currentColor"><path d="M2 8h4v1h1v2H6v1H3v-1H2V9zM7 1h2v1h1v2H9V3H8v6H7z"/></svg></button><div id="tt"><b>문틈</b><i>AJAR</i></div><div id="tb"><button id="tiB" type="button">게임 시작</button></div></div></div><div id="evo" hidden><canvas id="evcv"></canvas><div id="evc" hidden><div class="mgt">문 진화!</div><div id="evbox"><img id="evImg" alt=""></div><div class="evn" id="evName"></div><div class="mgtap" id="evTap">탭하여 계속</div></div></div><div id="df" hidden><div class="stg"><i class="seam"></i><div class="frame"><img class="leaf" id="dfImg" alt=""></div><div class="t t1">새로운 문 발견!</div><div class="t t2" id="dfName"></div><div class="t t3" id="dfSub"></div><div class="t t4">탭하여 계속</div></div></div><div id="dp" hidden><div class="dpb"><b id="dpT"></b><small id="dpS"></small><div class="dpv" id="dpv"><canvas id="dpc" width="180" height="176"></canvas></div><small id="dpN"></small><div class="dpbt"><button id="dpA" class="bt can">이 외형 적용</button><button id="dpX" class="bt">닫기</button></div><button id="dpR" class="bt" hidden style="min-height:38px">기본 문 외형으로 되돌리기</button></div></div>
 <div id="app">
 <div class="top"><div><span class="tl">보관 </span><i class="cn"></i><b id="bC">0</b><i class="gm"></i><b id="bG">0</b></div><div>상자 <b id="bxN">0</b></div><button id="fin">정산</button><button id="snd" aria-label="효과음" aria-pressed="true">효과음</button><button id="bgmB" aria-label="배경음악" aria-pressed="true">BGM</button><button id="pause" aria-label="일시정지">❚❚</button></div>
@@ -637,7 +644,7 @@ const CFG={
   '간수는 금고에 매일 철판을 한 장씩 덧댔다.\n열쇠 구멍까지 덮은 날, 안에서 노크 소리가 났다.\n지금도 가끔 철판을 벌리고 귀를 기울인다.',
   '왕은 떠나면서 제 왕관을 거인에게 맡겼다.\n거인은 밤마다 왕관 안쪽의 먼지를 닦는다.\n오늘은 금테에 작은 손자국이 하나 남아 있었다.'],
  swFx:{dur:0.22},
- forestGlow:{cycle:4.6,dur:0.8},   // v45 숲의 문 잎 빛: 한 바퀴(초)마다 dur초 동안 은은하게(잎 두 장이 서로 엇갈려 스침)
+ forestGlow:{start:0.15,c10:2.4,t10:0.9,c20:2.8,t20:1.5},   // v46 숲의 문 잎 빛: start초 뒤 시작 · Lv10은 c10초마다 t10초 동안 잎 3장 아래→위 / Lv20은 c20초마다 t20초 동안 잎무리→문틀 위→반대쪽 새순
  shine:{cycle:3.4,rareCycle:6.5,rareFrom:2},   // v44·v45 장비 광택: 유니크·전설은 cycle초(앞 28%에 빛이 지나감), 레어는 rareCycle초에 한 번 옅게, 일반·고급은 광택 없음   // v44 장비 광택 한 바퀴(초): 앞 28%에 빛이 지나가고 나머지는 쉼(전설 십자 반짝임은 지나간 직후)   // v42 문 전환 효과 길이(초): 누른 채 다른 속성 버튼으로 밀어 실제로 바뀐 순간 한 번
  evo:{pre:250,on:170,off:280,glow:400,ready:450},   // v39 문 진화(ms, 합성 성공과 같은 박자): 어둡게 시작 후 pre 뒤 기존 문이 on 동안 하얗게 → off 동안 잦아듦 → glow 동안 흰 여운 → 결과 카드+효과음 → ready 뒤 탭으로 닫기
  rcvShow:0.8,   // 수확 확정 뒤 하단에 '회수' 금액을 보여 주는 시간(초). 재화 지급과 다음 조작은 즉시예요
@@ -845,7 +852,8 @@ function hudPlace(){const st=$('stage'),c=$('c');if(!st||!c)return;const key=st.
  const cw=c.clientWidth,ch=c.clientHeight,sc=Math.min(cw/W,ch/H),ox=c.offsetLeft+c.clientLeft+(cw-W*sc)/2,oy=c.offsetTop+c.clientTop+(ch-H*sc)/2,V=CFG.gaze,g=$('gw'),n=$('sn');
  GW.sc=sc;GW.ox=ox;GW.oy=oy;
  g.style.fontSize=Math.min(V.fontPx,Math.floor(V.faceX*sc/5.5))+'px';g.style.right=(st.clientWidth-(ox+V.faceX*sc))+'px';g.style.top=(oy+V.eyeY*sc)+'px';   // 얼굴 왼쪽·눈높이, 오른쪽 끝은 눈 앞에서 멈춤
- n.style.left=(ox+9*sc)+'px';n.style.bottom=(st.clientHeight-(oy+V.noteY*sc))+'px';}                                                                  // 왼쪽 문 위
+ n.style.left=(ox+9*sc)+'px';n.style.bottom=(st.clientHeight-(oy+V.noteY*sc))+'px';
+ {const r=$('res');r.style.setProperty('--dl',Math.round(ox+6*sc)+'px');r.style.setProperty('--db',Math.round(st.clientHeight-(oy+(GROUND-D.h-4)*sc))+'px');}}   // v46: '회수!' 문구 자리 = 플레이어 문 바로 위                                                                  // 왼쪽 문 위
 function gwRefresh(){let h='';const ok=S.phase!=='bust'&&S.phase!=='settle'&&!(S.boss&&(S.boss.res||S.boss.endT<0));
  if(ok){const s=S.boss?S.boss.fw.s:(S.phase==='hold'?S.sg.s:0);
   if(s===1)h=S.boss?'거인이<br>노려본다!':'뒤척인다!';
@@ -853,6 +861,7 @@ function gwRefresh(){let h='';const ok=S.phase!=='bust'&&S.phase!=='settle'&&!(S
  const el=$('gw');
  if(h){if(h!==GW.html){el.innerHTML=h;GW.html=h;}if(!GW.vis){GW.vis=true;el.classList.remove('out');el.classList.add('on');$('stage').classList.add('gwOn');}}   // 뜨는 즉시 보여요
  else if(GW.vis){GW.vis=false;GW.html='';el.classList.remove('on');el.classList.add('out');$('stage').classList.remove('gwOn');}}
+function rcvNoteOff(){const e=$('sn');if(e){e.style.transition='none';e.classList.remove('on');void e.offsetWidth;e.style.transition='';}SN.on=false;}   // v46: 회수 문구가 뜨면 같은 자리의 '단계 개방' 알림은 바로 숨겨요
 function stageNote(k,resume){const e=$('sn');if(!e)return;const n=k+1,mode=resume?'r':'o',b=e.querySelector('b');
  if(SN.on&&b&&SN.mode===mode)b.textContent=n;else{e.innerHTML='<b>'+n+'</b>'+(resume?'단계 재개!':'단계 개방!');SN.mode=mode;}   // 이미 떠 있으면 같은 자리에서 숫자만 바꿔요
  e.style.fontSize=(k>=2?24:20)+'px';e.style.color=k>=2?'#ffffff':'#ffd84a';e.classList.add('on');SN.on=true;SN.until=performance.now()+CFG.gaze.noteMs;}
@@ -1280,7 +1289,7 @@ function tickStatus(dt){if(S.phase!=='hold'&&S.phase!=='idle')return;const F=CFG
 function clearStatus(){S.obs.forEach(o=>{if(o){o.burn=0;o.cold=0;o.frz=0;o.fcd=0;o.wet=0;o.bd=0;o.hot=0;}});}
 function rcvAdd(P,pend){const n=performance.now(),R=S.rcv&&S.rcv.pend?S.rcv:null;S.rcv={c:P.c+(R?R.c:0),g:P.g+(R?R.g:0),b:P.b+(R?R.b:0),pend:!!pend,until:pend?0:n+CFG.rcvShow*1000};}   // 문을 닫은 뒤 화상 수확이 남아 있으면(pend) 최종 회수가 확정되는 순간부터 시간을 세요
 function flushPot(){const v=val(S.pot),nb=S.pot.b,P0={c:S.pot.c,g:S.pot.g,b:S.pot.b};if(v>0||nb)rcvAdd(P0,false);else if(S.rcv&&S.rcv.pend)rcvAdd({c:0,g:0,b:0},false);S.bank.c+=S.pot.c;S.bank.g+=S.pot.g;S.best=Math.max(S.best,v);S.rnd.val+=v;M.bx.push(...S.pot.bx);commitBx(S.pot.bx);for(let q=S.pot.bx.length;q<nb;q++)M.bx.push({id:M.bid++,a:0,z:0});
- if(v>0||nb)banner(v+' 회수!','ok','남은 불로 얻은 수확'+(nb?' · 상자 +'+nb:''));S.pot=newPot();if(v>0||nb)recoverFx(P0,()=>{sfxLatch();later(130,()=>sfxBank(v));flyBank();});else sfxBank(v);save();}
+ if(v>0||nb)banner(v+' 회수!','ok rcv','남은 불로 얻은 수확'+(nb?' · 상자 +'+nb:''));S.pot=newPot();if(v>0||nb)recoverFx(P0,()=>{sfxLatch();later(130,()=>sfxBank(v));flyBank();});else sfxBank(v);save();}
 function drawStatus(o,x,y,w,h){const st=Math.min(2,S.stage);
  if(o.cold>0&&!(o.frz>0)){const F=CFG.frost,n=Math.max(1,Math.min(w>>1,Math.ceil(o.cold/F.need*(w/2))));ctx.globalAlpha=.1+.2*o.cold/F.need;r(x,y,w,h,'#9fe0ff');ctx.globalAlpha=.95;
   for(let q=0;q<n;q++){const px=x+1+((q*5+1)%(w-2)),py=y+(q%2?h-3:0);r(px,py,1,1,'#ffffff');if(st>0){r(px-1,py,3,1,'#e8faff');r(px,py-1,1,3,'#e8faff');}if(st>1){r(px-1,py-1,1,1,'#9fe0ff');r(px+1,py+1,1,1,'#9fe0ff');}}ctx.globalAlpha=1;}
@@ -1369,12 +1378,28 @@ function drawVault(o,i){const z=Math.min(2,((S.boss?S.boss.r:M.zone)|0)),w=z===1
  for(let q=0;q<n;q++){const c=VCR[q];if(c[1]>=h-1)continue;r(x+c[0],y+c[1],c[2],c[3],'#0a0c18');ctx.globalAlpha=(.35+.65*f)*(leak?1:.8);const lw=leak?2:1;r(x+c[0],y+c[1],c[2]>c[3]?c[2]:lw,c[3]>c[2]?c[3]:lw,leak?'#fff2c0':cc);ctx.globalAlpha=1;}
  drawStatus(o,x,y,w,h);
  r(x,barY,w,3,'#222');r(x,barY,Math.max(1,Math.round(w*Math.max(0,o.hp)/o.max)),3,o.frz>0?'#bfeaff':o.burn>0?'#ff8a3a':o.wet>0?'#7fd0ff':'#ff5a7a');}
+/* v46: 금고 '거인이 노려본다!' 때 내려오는 거인의 손 — 손등이 보이고 왼쪽에 손바닥 옆면이 살짝, 엄지는 옆으로 벌림,
+   손가락 길이 중지>약지>검지>새끼, 끝마디는 문(왼쪽 아래) 쪽으로 굽힘. 색은 기존 보라 + 한 톤 밝은 음영(손등 윗선·마디)만 */
+function drawGiantHand(x,y){const B='#2a1d4a',L='#3a2a66',E='#1c1233';
+ r(x+10,y-14,26,16,B);r(x+12,y-14,2,16,L);                       // 손목(위에서 내려옴)
+ r(x+3,y,37,20,B);r(x+2,y+2,1,16,B);r(x+4,y+20,35,1,B);          // 손등(모서리를 한 칸씩 깎아 둥글게)
+ r(x,y+3,2,15,E);r(x+1,y+18,2,2,E);                              // 손바닥 옆면(살짝 보이는 두께)
+ r(x+5,y+2,31,2,L);r(x+4,y+4,2,10,L);                            // 손등 윗선 음영
+ // 엄지: 굵게 옆으로 벌렸다가 끝이 손가락 쪽(아래·안쪽)으로 감김
+ r(x+38,y+4,6,9,B);r(x+42,y+8,5,8,B);r(x+45,y+13,4,6,B);r(x+43,y+18,4,3,B);r(x+41,y+20,3,2,B);
+ r(x+39,y+4,4,1,L);r(x+43,y+8,3,1,L);r(x+46,y+13,2,1,L);
+ // 손가락: [시작x, 폭, 길이] 새끼·약지·중지·검지(왼쪽→오른쪽) — 중지가 가장 길고 새끼가 가장 짧아요
+ [[x+4,6,9],[x+11,7,13],[x+19,7,16],[x+27,7,12]].forEach(([fx,fw,len])=>{const y0=y+20,st=len-5;
+  r(fx+1,y+17,fw-2,2,L);                                          // 손등의 손가락 뿌리 마디 돌기
+  r(fx,y0,fw,st,B);r(fx+1,y0+Math.round(st*.55),fw-2,1,L);        // 첫·가운데 마디(가운데 마디 음영)
+  r(fx-1,y0+st,fw,3,B);r(fx-2,y0+st+3,fw-1,2,B);r(fx-3,y0+st+4,3,1,B);   // 끝마디: 문 쪽(왼쪽 아래)으로 굽음
+  r(fx,y0+st,fw-2,1,L);});}
 function drawFocusHand(){const B=S.boss;if(!B||!B.fw.s)return;const f=B.fw,C=CFG.zones[B.r].focus,t=f.s===1?1-f.t/C.tele:1,y=Math.round(-30+46*t),x=16+Math.round(Math.sin(S.t*3)*2);
- ctx.globalAlpha=f.s===1?(Math.floor(S.t*12)%2?.9:.55):.92;r(x,y,40,20,'#2a1d4a');r(x,y,40,2,'#3a2a66');for(let i=0;i<4;i++)r(x+2+i*9,y+20,6,9+(i%2)*3,'#2a1d4a');r(x+40,y+4,7,6,'#2a1d4a');ctx.globalAlpha=1;
+ ctx.globalAlpha=f.s===1?(Math.floor(S.t*12)%2?.9:.55):.92;drawGiantHand(x,y);ctx.globalAlpha=1;
  ctx.globalAlpha=(f.s===1?.1:.07+.05*Math.sin(S.t*12));r(0,0,W,4,'#ff3030');r(0,H-4,W,4,'#ff3030');r(0,0,4,H,'#ff3030');r(W-4,0,4,H,'#ff3030');ctx.globalAlpha=1;}
 const gradeOf=w=>{let r=rnd(0,w.reduce((a,b)=>a+b,0));for(let i=0;i<w.length;i++){if(r<w[i])return i;r-=w[i];}return 0;};
 function endRound(){bgmDip();const v=val(S.pot),nb=S.pot.b,P0={c:S.pot.c,g:S.pot.g,b:S.pot.b};if(v>0||nb)closeSlam();S.bank.c+=S.pot.c;S.bank.g+=S.pot.g;S.best=Math.max(S.best,v);S.rnd.val+=v;M.bx.push(...S.pot.bx);commitBx(S.pot.bx);for(let q=S.pot.bx.length;q<nb;q++)M.bx.push({id:M.bid++,a:0,z:0});
- if(v>0||nb){banner(v+' 회수!','ok',[nb?'미확인 상자 +'+nb:'',S.hold>.05?'개방 '+(stageOf(S.hold)+1)+'단계':''].filter(Boolean).join(' · '));}
+ if(v>0||nb){rcvNoteOff();banner(v+' 회수!','ok rcv',[nb?'미확인 상자 +'+nb:'',S.hold>.05?'개방 '+(stageOf(S.hold)+1)+'단계':''].filter(Boolean).join(' · '));}
  if(v>0||nb)rcvAdd(P0,burnN()>0);S.pot=newPot();S.phase='idle';S.lock=CFG.alert.cooldown;S.free=0;S.sg={s:0,t:0};vib(20);if(v>0||nb)recoverFx(P0,()=>{sfxLatch();later(130,()=>sfxBank(v));flyBank();});else sfxBank(v);save();}
 function bust(){S.rcv=null;const v=val(S.pot),nb=S.pot.b;S.lostP={c:S.pot.c,g:S.pot.g,b:S.pot.b};fadePops();S.phase='bust';S.pt=0;S.alert=100;S.hand=0;S.swept=false;S.shake=4;S.flash=1;S.hold=0;S.stage=0;S.free=0;S.rnd.busts++;S.obs.forEach(o=>{if(o)o.burn=0;});if(S.boss&&S.pot.bx.some(b=>b.t==='boss'||b.t==='zb'))S.boss.lost=true;
  S.ignore=new Set(held.keys());held.clear();banner('들켰다!','bad',v||nb?'−'+v+(nb?' · 상자 '+nb+'개':'')+' 압수':'');toast('');vib([60,40,90]);sfxBust();}
@@ -1424,8 +1449,8 @@ function leaf(g,x,y,w,h,d,tm){const c=doorPal(d),R=(a,b,cw,ch,col)=>{g.fillStyle
 const DICON={};
 /* --- v29 특수 문 외형 단계(Lv10 · Lv20): 문틀 장식. g=그릴 캔버스, (x,y,w,h)=문 안쪽 사각형, up=1이면 문 위쪽 공간까지 써요(게임 화면), 0이면 아이콘/미리보기 --- */
 function spike(g,x0,y0,dx,dy,len,hw,fill,line,mid){for(let i=0;i<len;i++){const half=Math.max(0,Math.round(hw*Math.min(1,(1-i/len)*1.7)));for(let k=-half;k<=half;k++){const px=x0+dx*i+(dx?0:k),py=y0+dy*i+(dy?0:k),edge=k===-half||k===half||i===len-1;g.fillStyle=edge?line:(k===0&&mid?mid:fill);g.fillRect(px,py,1,1);}}}
-function spFrame(g,x,y,w,h,d,tm,up){const st=d.st|0;if(!d.sp||!st)return;const F=Math.floor,T=tm||0,sc=up?1:.55;
- const R=(a,b,cw,ch,c)=>{g.fillStyle=c;g.fillRect(Math.round(x+a),Math.round(y+b),cw,ch);},SP=(a,b,dx,dy,len,hw)=>spike(g,Math.round(x+a),Math.round(y+b),dx,dy,Math.max(2,Math.round(len*sc)),hw,'#bfeaff','#1c5a8c','#ffffff');
+function spFrame(g,x,y,w,h,d,tm,up,og){const st=d.st|0;if(!d.sp||!st)return;const F=Math.floor,T=tm||0,sc=up?1:.55;   // og: 숲의 문 잎 빛만 그리기(플레이 화면에서 어두운 가장자리 효과 뒤에 한 번 더)
+ const RG=(a,b,cw,ch,c)=>{g.fillStyle=c;g.fillRect(Math.round(x+a),Math.round(y+b),cw,ch);},R=(a,b,cw,ch,c)=>{if(!og)RG(a,b,cw,ch,c);},SP=(a,b,dx,dy,len,hw)=>spike(g,Math.round(x+a),Math.round(y+b),dx,dy,Math.max(2,Math.round(len*sc)),hw,'#bfeaff','#1c5a8c','#ffffff');
  if(d.sp==='fire'){   // 1단계: 문틀 가장자리에 불씨 / 2단계: 문 위로 불꽃이 솟아요
   for(let i=0;i<8;i++){if(F(T*5+i*1.7)%3===0)continue;R(i%2?w:-2,3+((i*5)%(h-6)),2,2,(F(T*7+i)%2)?'#ff8a2a':'#ffd84a');}
   R(-2,-2,2,2,'#ff8a2a');R(w,-2,2,2,'#ff8a2a');
@@ -1444,14 +1469,22 @@ function spFrame(g,x,y,w,h,d,tm,up){const st=d.st|0;if(!d.sp||!st)return;const F
    if(up){const bob=Math.round(Math.sin(T*3)*1.5);R((w>>1)-2,-9+bob,5,1,'#c89bff');R((w>>1),-11+bob,1,5,'#c89bff');R((w>>1)-1,-8+bob,3,1,gl);}}}
   else if(d.sp==='forest'){   // Lv10: 가느다란 덩굴 + 새순(문 윤곽 밖으로 삐죽) / Lv20: 굵은 덩굴 한 줄기가 문틀 옆을 타고 올라 위쪽 모서리를 감싸요
    const sw=i=>0,ox=up?-4:-2,vw=up?4:2;   // v45: 덩굴·잎·새순은 문틀을 따라 감긴 모양으로 고정(꿈틀거림 없음)
-   const glw=i=>{const q=((T+i*2.3)%CFG.forestGlow.cycle)/CFG.forestGlow.dur;return q<1?Math.sin(q*Math.PI):0;},lit=(X,Y,W2,H2,i)=>{const a=glw(i);if(a>0){g.globalAlpha=a*.75;R(X,Y,W2,H2,'#eaffc8');g.globalAlpha=1;}};   // 잎 한두 장에만 가끔 스치는 옅은 빛
+   const FG=CFG.forestGlow,ph=(cy,tr)=>{const t=T-FG.start;return t<0?-1:(t%cy)/tr;},   // v46: 0~1 = 빛이 지나가는 중, 1 넘으면 쉬는 중
+    hl=(X,Y,W2,H2,a,c)=>{if(a<=0.02||(up&&!og))return;const ga=g.globalAlpha;g.globalAlpha=ga*Math.min(1,a);RG(X,Y,W2,H2,c);g.globalAlpha=ga;},   // 플레이 화면은 가장자리 어둠 뒤에 따로 그려 또렷하게   // 잎·덩굴의 원래 칸 위에 색·밝기만 덧칠(모양·위치는 그대로)
+    env=(pos,k,wd)=>Math.max(0,1-Math.abs(pos-k)/wd);
    if(st===1){for(let yy=h-1;yy>=h*.38;yy--)R(-2,yy,1,1,'#2a7a2a');
-    [[.82],[.66],[.5]].forEach((q,i)=>{const yy=Math.round(h*q[0]);R(-3,yy,1,2,'#2a7a2a');R(-4,yy-1,2,1,'#7ddf6a');R(-4,yy-2+sw(i),1,1,'#b6ff7a');if(i!==1)lit(-4,yy-1,2,1,i);});
+    const u1=ph(FG.c10,FG.t10),L1=(h-1)-Math.ceil(h*.38),hd1=u1<0?-99:u1*(L1+8)-4,a1=d=>Math.max(0,1-Math.abs(hd1-d)/4);   // Lv10: 왼쪽 줄기를 타고 아래→위로 빛이 흐르며 잎 3장을 차례로 밝힘
+    for(let yy=h-1;yy>=h*.38;yy--)hl(-2,yy,1,1,a1(h-1-yy)*.6,'#c8f070');
+    [[.82],[.66],[.5]].forEach((q,i)=>{const yy=Math.round(h*q[0]);R(-3,yy,1,2,'#2a7a2a');R(-4,yy-1,2,1,'#7ddf6a');R(-4,yy-2+sw(i),1,1,'#b6ff7a');const a=a1(h-1-yy);hl(-4,yy-1,2,1,a,'#efff9c');hl(-4,yy-2,1,1,a,'#fff4b0');hl(-3,yy,1,2,a*.8,'#c8f070');});
     for(let yy=h-1;yy>=h*.7;yy--)R(w+1,yy,1,1,'#2a7a2a');R(w+2,Math.round(h*.78),2,1,'#7ddf6a');R(w+3,Math.round(h*.78)-1,1,1,'#b6ff7a');}
    else{for(let yy=h+1;yy>=-3;yy--){const x0=ox+Math.round(Math.sin(yy*.45));R(x0,yy,vw,1,'#2f8a2f');R(x0,yy,1,1,'#1d5a1d');R(x0+1,yy,1,1,'#58c050');}
     const tw=Math.round(w*.7);for(let xx=-vw-1;xx<tw;xx++){const yy=-3+Math.round(Math.sin(xx*.6)*.8);R(xx,yy-1,1,vw,'#2f8a2f');R(xx,yy-1,1,1,'#58c050');R(xx,yy+vw-2,1,1,'#1d5a1d');}
     R(tw,-5,2,2,'#2f8a2f');R(tw+1,-7+sw(0),1,2,'#2f8a2f');R(tw+1,-8+sw(0),2,1,'#7ddf6a');
-    [[.7],[.45],[.2]].forEach((q,i)=>{const yy=Math.round(h*q[0]),x0=ox-(i%2?0:1);R(x0-2,yy,2,2,'#7ddf6a');R(x0-3,yy-1+sw(i),1,1,'#b6ff7a');if(i!==1)lit(x0-2,yy,2,2,i);});
+    const u2=ph(FG.c20,FG.t20),tw2=Math.round(w*.7),nT=tw2+vw+1,LV=h+4,L2=LV+nT+2,hd2=u2<0?-99:u2*(L2+10)-5,a2=d=>Math.max(0,1-Math.abs(hd2-d)/5);   // Lv20: 왼쪽 잎무리에서 문틀 윗부분을 따라 반대쪽 새순 잎까지 이어지는 한 줄기 빛(Lv10보다 긴 길)
+    for(let yy=h+1;yy>=-3;yy--){const x0=ox+Math.round(Math.sin(yy*.45));hl(x0,yy,vw,1,a2(h+1-yy)*.55,'#c8f070');}
+    [[.7],[.45],[.2]].forEach((q,i)=>{const yy=Math.round(h*q[0]),x0=ox-(i%2?0:1);R(x0-2,yy,2,2,'#7ddf6a');R(x0-3,yy-1+sw(i),1,1,'#b6ff7a');const a=a2(h+1-yy);hl(x0-2,yy,2,2,a,'#efff9c');hl(x0-3,yy-1,1,1,a,'#fff4b0');});
+    for(let k=0;k<nT;k++){const xx=-vw-1+k,yy=-3+Math.round(Math.sin(xx*.6)*.8),a=a2(LV+k);hl(xx,yy-1,1,vw,a*.55,'#c8f070');hl(xx,yy-1,1,1,a,'#f4ffa8');}
+    {const a=a2(LV+nT+1);hl(tw2,-5,2,2,a*.6,'#c8f070');hl(tw2+1,-8,2,1,a,'#fff4b0');hl(tw2+1,-7,1,2,a*.8,'#c8f070');}
     [[.3],[.8]].forEach(q=>R(ox+vw+1,Math.round(h*q[0]),2,2,'#7ddf6a'));
     R(Math.round(w*.3),-5,1,1,'#ffd84a');R(Math.round(w*.5),-6,1,1,'#ff8ad0');
     for(let yy=h-1;yy>=h*.6;yy--)R(w+1,yy,1,1,'#2a7a2a');R(w+2,Math.round(h*.72),2,1,'#7ddf6a');}}}
@@ -1623,7 +1656,7 @@ function costBtn(a,o,mx,pre){if(mx)return'<button class="bt" disabled>MAX</butto
  const t=(pre?pre+' ':'')+(o.c?'<span class="'+(okC?'':'sh')+'"><i class="cn"></i>'+o.c+'</span> ':'')+(o.g?'<span class="'+(okG?'':'sh')+'"><i class="gm"></i>'+o.g+'</span>':'');
  const l=ok?'':'<span class="lack">'+[o.c>S.bank.c?'코인 '+(o.c-S.bank.c):'',o.g>S.bank.g?'보석 '+(o.g-S.bank.g):''].filter(Boolean).join(' · ')+' 부족</span>';
  return'<button class="bt '+(ok?'can':'dis')+'" data-a="'+a+'">'+t+l+'</button>';}
-function openUp(t){if(S.up)return;popClose();const from=S.phase==='settle'?'settle':(S.phase==='idle'&&!S.paused?'idle':null);if(!from)return;S.upFrom=from;held.clear();S.ignore.clear();S.eqSel=null;S.mg=null;if(from==='idle')S.paused=true;if(from==='settle')$('sett').hidden=true;if(t==='stat'||t==='eq'||t==='door')S.tab=t;if(S.tab==='door')S.dsel=M.skin&&M.sp[M.skin]?M.skin:'base';S.up=true;msg('');renderUp();$('up').hidden=false;syncSheet();}
+function openUp(t){if(S.up)return;popClose();const from=S.phase==='settle'?'settle':(S.phase==='idle'&&!S.paused?'idle':null);if(!from)return;S.upFrom=from;held.clear();S.ignore.clear();S.eqSel=null;S.mg=null;if(from==='idle')S.paused=true;if(from==='settle')$('sett').hidden=true;if(t==='stat'||t==='eq'||t==='door')S.tab=t;if(S.tab==='door')S.pvT=0;if(S.tab==='door')S.dsel=M.skin&&M.sp[M.skin]?M.skin:'base';S.up=true;msg('');renderUp();$('up').hidden=false;syncSheet();}
 function closeUp(){popClose();S.up=false;$('up').hidden=true;held.clear();S.ignore.clear();const f=S.upFrom;S.upFrom=null;if(f==='idle')S.paused=false;if(f==='settle')drawSettle();syncSheet();}
 /* v43: 장비창에서 문고리·경첩·문패를 바꿔 눌러도 창 윗선과 카드가 움직이지 않게, 세 부위 중 가장 긴 목록에 맞춘 높이를 유지(최대 높이는 넘지 않음). 합성창을 펼치면 해제 */
 function eqHold(){const sh=document.querySelector('#up .sheet'),ub=$('ub');if(!sh)return;sh.style.minHeight='';
@@ -1784,7 +1817,7 @@ const EV={on:false,rdy:false,arm:null,tok:0};
 function evoPlay(g0,g1,sp){const e=$('evo'),img=$('evImg'),card=$('evc'),cv=$('evcv'),tok=++EV.tok,ok=()=>EV.tok===tok&&EV.on,V=CFG.evo;
  EV.on=true;EV.rdy=false;EV.arm=null;S.evFreeze=true;
  const nm=sp?CFG.special.stage[sp][g1]:CFG.door.names[g1],lvN=sp?M.spl[sp]:M.dlv;
- img.src=sp?doorIcon({sp,st:g1}):doorIcon(dOf(g1));$('evName').textContent=nm+' · Lv.'+lvN;
+ img.src=sp?doorIcon({sp,st:g1}):doorIcon(dOf(g1));$('evName').textContent=nm+'\u00a0·\u00a0Lv.'+lvN;   // 줄이 바뀌어도 '· Lv.N'이 떨어지지 않게
  card.hidden=true;card.classList.remove('in');$('evTap').classList.remove('on');e.hidden=false;
  // 강화창에서 보던 '왼쪽의 기존 문'(미리보기 캔버스의 왼쪽 문) 위치 → 오버레이(프레임 안쪽) 기준 좌표
  const o=frIn(),pv=$('pv'),rc=pv?pv.getBoundingClientRect():{left:innerWidth/2-70,top:innerHeight*.25,width:140,height:44},kk=rc.width/140,k=2;
@@ -1811,7 +1844,7 @@ function evoClose(){if(!EV.on)return;EV.on=false;cancelAnimationFrame(EV.raf);EV
 {const ev=$('evo');ev.addEventListener('pointerdown',e=>{e.preventDefault();EV.arm=(EV.on&&EV.rdy)?e.pointerId:null;});ev.addEventListener('pointercancel',()=>{EV.arm=null;});
  ev.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(EV.on&&EV.rdy&&EV.arm!==null)evoClose();});}   // 연출이 끝난 뒤 '새로' 시작한 탭만 닫혀요. 닫는 건 click에서 해서 뒤의 [강화]가 다시 눌리지 않아요
 function setSkin(id){if(id==='base')M.skin=null;else if(M.sp[id])M.skin=id;else return;save();renderUp();}
-function act(a){if(S.mgBusy||(S.evGuard&&performance.now()<S.evGuard)||EV.on)return;const k=a[0];if(k==='s')buyStat(a[1]);else if(k==='slot'){popClose();S.slot=a[1];S.eqSel=null;if(S.mg)S.mg={slot:a[1],sel:[],res:null};renderUp();}else if(k==='sel')popToggle('eq',a[1]);else if(k==='mg'){popClose();S.mg=S.mg?null:{slot:S.slot,sel:[],res:null};msg('');renderUp();}else if(k==='mgp')mgPick(a[1]);else if(k==='mgx'){if(S.mg){S.mg.sel=S.mg.sel.filter(u=>u!==+a[1]);S.mg.res=null;renderUp();}}else if(k==='mgo')mergeDo();else if(k==='sort'){popClose();S.sort=a[1];renderUp();}else if(k==='best')bestEquip();else if(k==='auto'){toggleAuto();renderUp();}else if(k==='eq')toggleEquip(a[1]);else if(k==='en')enhanceItem(a[1]);else if(k==='dsel'){const id=a[1],own=id==='base'||!!M.sp[id],used=(M.skin||'base')===id;if(S.dsel===id){if(own&&!used)setSkin(id);}else{S.dsel=id;renderUp();}}/* v44: 처음 누르면 미리보기, 같은 카드를 다시 누르면 장착(잠긴 문은 장착 안 됨) */else if(k==='dlv')doorLevelUp();else if(k==='slv')spLevelUp(a[1]);else if(k==='dskin')setSkin(a[1]);}
+function act(a){if(S.mgBusy||(S.evGuard&&performance.now()<S.evGuard)||EV.on)return;const k=a[0];if(k==='s')buyStat(a[1]);else if(k==='slot'){popClose();S.slot=a[1];S.eqSel=null;if(S.mg)S.mg={slot:a[1],sel:[],res:null};renderUp();}else if(k==='sel')popToggle('eq',a[1]);else if(k==='mg'){popClose();S.mg=S.mg?null:{slot:S.slot,sel:[],res:null};msg('');renderUp();}else if(k==='mgp')mgPick(a[1]);else if(k==='mgx'){if(S.mg){S.mg.sel=S.mg.sel.filter(u=>u!==+a[1]);S.mg.res=null;renderUp();}}else if(k==='mgo')mergeDo();else if(k==='sort'){popClose();S.sort=a[1];renderUp();}else if(k==='best')bestEquip();else if(k==='auto'){toggleAuto();renderUp();}else if(k==='eq')toggleEquip(a[1]);else if(k==='en')enhanceItem(a[1]);else if(k==='dsel'){const id=a[1],own=id==='base'||!!M.sp[id],used=(M.skin||'base')===id;if(S.dsel===id){if(own&&!used)setSkin(id);}else{S.dsel=id;S.pvT=0;renderUp();}}/* v44: 처음 누르면 미리보기, 같은 카드를 다시 누르면 장착(잠긴 문은 장착 안 됨) */else if(k==='dlv')doorLevelUp();else if(k==='slv')spLevelUp(a[1]);else if(k==='dskin')setSkin(a[1]);}
 function update(dt){
  S.t+=dt;S.pt+=dt;const A=CFG.alert,Mo=CFG.mom,F=CFG.fx;
  S.zt=Math.max(0,(S.zt||0)-dt);S.flash=Math.max(0,S.flash-dt*3);S.shake=Math.max(0,S.shake-dt*8);S.zap=Math.max(0,S.zap-dt);S.lock=Math.max(0,S.lock-dt);
@@ -2045,7 +2078,7 @@ function drawDoor(){
   else if(ELID(S.type)==='fire'){r(x,y0,D.w,D.h,'#3a0c06');r(x,y0+D.h-10,D.w,10,'#7a1e0c');for(let i=0;i<5;i++){const hh=6+((Math.floor(S.t*10)+i*3)%5)*3;r(x+2+i*4,y0+D.h-hh,3,hh,'#ff8a2a');r(x+3+i*4,y0+D.h-hh+2,1,Math.max(1,hh-3),'#ffd84a');}}
   else if(ELID(S.type)==='frost'){r(x,y0,D.w,D.h,'#16304a');r(x,y0+2,D.w,6,'#2a5a80');for(let i=0;i<5;i++)r(x+2+i*4,y0+8,1,8+(i%3)*4,'#bfeaff');for(let i=0;i<3;i++)if(Math.floor(S.t*6+i*2)%4<2)r(x+3+i*7,y0+22+i*4,2,2,'#ffffff');}
   else{r(x,y0,D.w,D.h,'#262b45');r(x,y0+2,D.w,8,'#566082');r(x+3,y0+8,10,6,'#6a7498');for(let i=0;i<2+k*2;i++)r(x+1+Math.floor(rnd(0,D.w-4)),y0+4+Math.floor(rnd(0,D.h-8)),1,3,'#ffe066');if(S.zap>0)r(x,y0,D.w,D.h,'rgba(255,240,150,.4)');}}
- const lw=Math.round(D.w*(1-o*.82));leaf(ctx,x,y0,lw,D.h,doorSel(),S.t);drawEquip(x,y0,lw,D.h);spFrame(ctx,x,y0,D.w,D.h,doorSel(),S.t,1);drawSwFx(x,y0,lw);
+ const lw=Math.round(D.w*(1-o*.82));leaf(ctx,x,y0,lw,D.h,doorSel(),S.t);drawEquip(x,y0,lw,D.h);spFrame(ctx,x,y0,D.w,D.h,doorSel(),S.t,1);S._dfp={x,y:y0};drawSwFx(x,y0,lw);
  if(hold&&ELID(S.type)==='sea'){const n=[5,8,12][k],h0=[10,20,34][k];for(let i=0;i<n;i++){const h=h0*(1-i/n)*(.85+.15*Math.sin(S.t*9+i));r(x+D.w+i*3,GROUND-h,3,h,'#2a7fd6');r(x+D.w+i*3,GROUND-h,3,2,'#e4f6ff');}}
  if(hold&&ELID(S.type)==='fire'){const n=[4,6,8][k],h0=[8,15,24][k];for(let i=0;i<n;i++){const h=Math.max(2,h0*(1-i/n)*(.7+.3*Math.sin(S.t*13+i*1.9)));ctx.globalAlpha=.85;r(x+D.w+i*3,GROUND-h,3,h,'#e0501a');r(x+D.w+i*3,GROUND-h,3,Math.max(1,h-3),'#ff9a2a');r(x+D.w+i*3,GROUND-h,2,2,'#ffe27a');ctx.globalAlpha=1;}}
  if(hold&&ELID(S.type)==='frost'){const n=[3,5,7][k],h0=[6,12,20][k];for(let i=0;i<n;i++){const h=Math.max(3,h0*(1-i/(n+1))*(.8+.2*Math.sin(S.t*5+i*2)));const px=x+D.w+i*4;ctx.globalAlpha=.9;r(px,GROUND-h,2,h,'#9fe0ff');r(px,GROUND-h,1,h,'#e8faff');r(px-1,GROUND-h,4,1,'#ffffff');ctx.globalAlpha=1;}}}
@@ -2168,7 +2201,7 @@ function fxTick(dt){const V=CFG.vfx.danger,a=S.alert,live=(S.phase==='hold'||S.p
 function draw(){
  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);
  if(S.shake>0)ctx.translate(Math.round(rnd(-S.shake,S.shake)),Math.round(rnd(-S.shake,S.shake)));
- FZ=S.phase==='bust'?0:zoneOf(S.alert);drawBgZ();drawGiant();S.obs.forEach((o,i)=>{if(o)drawObs(o,i)});drawPile();drawLegendAura();drawDoor();ctx.drawImage(vig,0,0);
+ FZ=S.phase==='bust'?0:zoneOf(S.alert);drawBgZ();drawGiant();S.obs.forEach((o,i)=>{if(o)drawObs(o,i)});drawPile();drawLegendAura();S._dfp=null;drawDoor();ctx.drawImage(vig,0,0);{const d=doorSel();if(S._dfp&&d.sp==='forest')spFrame(ctx,S._dfp.x,S._dfp.y,D.w,D.h,d,S.t,1,true);}
  S.rings.forEach(g=>{ctx.globalAlpha=Math.max(0,Math.min(1,g.l/.5));const R=Math.round(g.r);r(g.x-R,g.y-R,R*2,2,g.c);r(g.x-R,g.y+R,R*2,2,g.c);r(g.x-R,g.y-R,2,R*2,g.c);r(g.x+R,g.y-R,2,R*2+2,g.c);ctx.globalAlpha=1;});
  S.bolts.forEach(b=>{const a=b.t/b.m;ctx.globalAlpha=a*.5;for(let i=0;i<b.pts.length-1;i++)line(b.pts[i],b.pts[i+1],b.w+2,'#ffd84a');ctx.globalAlpha=a;for(let i=0;i<b.pts.length-1;i++)line(b.pts[i],b.pts[i+1],b.w-1,'#fffbe0');ctx.globalAlpha=1;});
  drawSea();
